@@ -1,6 +1,6 @@
 package com.xnlogic.sewergrates.datatypes;
 
-import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.xnlogic.sewergrates.entities.*;
 
 // year parts of year, month, and day should be final, so no need for setters
@@ -31,5 +31,5 @@ public abstract class BaseGraphDate
 	public abstract String getISODate();
 			
 	// persistence
-	public void save(Graph graph) {};
+	protected void save(KeyIndexableGraph graph) {};
 } // GraphDate

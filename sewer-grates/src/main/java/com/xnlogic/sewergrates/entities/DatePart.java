@@ -1,5 +1,8 @@
 package com.xnlogic.sewergrates.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
@@ -9,14 +12,14 @@ public abstract class DatePart
 {
 	private int value = 0;
 	protected Vertex v = null;
-	
+		
 	// TODO: Move these into .properties file.
 	private final String PROP_VALUE = "dateValue";
 	private final String PROP_TYPE = "dateType";
 	
 	public DatePart(int value) throws IllegalDatePartValueException
 	{
-		if (value < 0)
+		if (value < 1)
 			throw new IllegalDatePartValueException();
 			
 		this.value = value;
@@ -63,5 +66,5 @@ public abstract class DatePart
 	Vertex getBackingVertex()
 	{
 		return this.v;
-	} // getRawVertex
+	} // getBackingVertex
 } // DatePart

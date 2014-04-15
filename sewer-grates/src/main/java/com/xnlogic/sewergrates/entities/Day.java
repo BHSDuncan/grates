@@ -3,7 +3,12 @@ package com.xnlogic.sewergrates.entities;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
+import com.tinkerpop.blueprints.Query;
+import com.tinkerpop.blueprints.Vertex;
+import com.xnlogic.sewergrates.exceptions.DayCouldNotBeCreatedFromVertexException;
 import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
+import com.xnlogic.sewergrates.exceptions.MonthCouldNotBeCreatedFromVertexException;
+import com.xnlogic.sewergrates.helpers.DateGraphHelper;
 
 public class Day extends DatePart
 {
@@ -30,10 +35,13 @@ public class Day extends DatePart
 		// can set any additional properties, etc. here...
 
 		// save the next day, just in case
-		this.nextDay.save(graph);
-		
-		// update the "next" edge
-		this.updateNextDayEdge(graph);
+		if (this.nextDay != null)
+		{
+			this.nextDay.save(graph);
+
+			// update the "next" edge
+			this.updateNextDayEdge(graph);
+		} // if
 	} // save
 	
 	private void updateNextDayEdge(KeyIndexableGraph graph)
@@ -57,14 +65,23 @@ public class Day extends DatePart
 			// make sure we don't have any other ones before we update (i.e. remove/add) the edge
 			assert(!edges.iterator().hasNext());
 
+			// insert the new vertex in between so that the one edge becomes two (i.e. split the edge)
+			Vertex vIn = e.getVertex(Direction.IN);  // head of edge
+			Vertex vOut = e.getVertex(Direction.OUT); // tail of edge
+			
 			// only remove/add if the edge isn't already in there as-is
-			if (e.getVertex(Direction.IN) != this.nextDay.getBackingVertex() && e.getVertex(Direction.OUT) != this.v)
+			if (vIn != this.nextDay.getBackingVertex() && vOut != this.v)
 			{
+				// get rid of the original edge
 				graph.removeEdge(e);
+				
+				// create the edge from this day to the new next day
 				graph.addEdge(null, this.v, this.nextDay.getBackingVertex(), this.EDGE_NEXT_DAY);
+				
+				// create the edge from the new next day to the old next day
+				graph.addEdge(null, this.nextDay.getBackingVertex(), vIn, this.EDGE_NEXT_DAY);
 			} // if
 			
 		} // if
 	} // updateNextDayEdge
-
 } // Day

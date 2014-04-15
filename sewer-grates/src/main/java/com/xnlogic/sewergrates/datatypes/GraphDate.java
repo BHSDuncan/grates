@@ -1,10 +1,13 @@
 package com.xnlogic.sewergrates.datatypes;
 
+import java.util.Iterator;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
+import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.sewergrates.entities.*;
 import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
 import com.xnlogic.sewergrates.helpers.DateGraphHelper;
@@ -18,13 +21,17 @@ public class GraphDate extends BaseGraphDate
 	public GraphDate(int yearValue, int monthValue, int dayValue, KeyIndexableGraph graph) throws IllegalDatePartValueException, NullPointerException
 	{
 		if (graph == null)
-			throw new NullPointerException("graph must be a valid Graph object.");
+			throw new NullPointerException("graph must be a valid KeyIndexableGraph object.");
 		
 		this.year = new Year(yearValue);
 		this.month = new Month(monthValue);
 		this.day = new Day(dayValue);
 		
 		this.graph = graph;
+		
+		// add in relationships
+		this.year.addMonth(this.month);
+		this.month.addDay(this.day);
 		
 		// need to see if there is already a representation of this date in the graph; however note that we need ALL of the date parts above in order
 		// to identify whether or not they exist (actually, we just need the year for the year, the year and the month for the month, and 
@@ -39,12 +46,97 @@ public class GraphDate extends BaseGraphDate
 		
 		// get year
 		
+		// try to lookup the exact year via the index; if no such year exists, there's no point in continuing
+		Iterable<Vertex> vYears = this.graph.getVertices("dateValue", this.year.getValue());
+		Vertex vYear = null;
+		
+		if (vYears != null)
+		{
+			Iterator<Vertex> iterYears = vYears.iterator();
+			
+			if (iterYears.hasNext())
+			{
+				vYear = (Vertex)iterYears.next();
+			
+				// make sure we only have one match for the year
+				assert(!iterYears.hasNext());
+			
+				// set the backing vertex
+				this.year.setVertex(vYear);
+			
+				// load any associated months
+				this.year.loadMonths();
+			}
+			else
+			{
+				// no year found; get outta here
+				return;
+			} // if
+		}
+		else
+		{
+			// don't bother continuing since not even the year matches
+			return;
+		} // if
+
 		// get month
+		Iterable<Vertex> vMonths = vYear.getVertices(Direction.OUT, "MONTH");
+		Vertex vMonth = null;
+		
+		if (vMonths != null)
+		{
+			Iterator<Vertex> iterMonths = vMonths.iterator();
+			
+			while (iterMonths.hasNext())
+			{
+				Vertex v = (Vertex)iterMonths.next();
+				
+				if ((Integer)v.getProperty("dateValue") == this.month.getValue())
+				{
+					vMonth = v;
+					this.month.setVertex(vMonth);
+					
+					// load any associated days
+					this.month.loadDays();
+					
+					break;
+				} // if
+			} // while
+			
+			if (iterMonths.hasNext())
+			{
+				return;
+			} // if
+		} // if
 		
 		// get day
+		Iterable<Vertex> vDays = vMonth.getVertices(Direction.OUT, "DAY");
+		Vertex vDay = null;
+		
+		if (vDays != null)
+		{
+			Iterator<Vertex> iterDays = vDays.iterator();
+			
+			while (iterDays.hasNext())
+			{
+				Vertex v = (Vertex)iterDays.next();
+				
+				if ((Integer)v.getProperty("dateValue") == this.day.getValue())
+				{
+					vDay = v;
+					this.day.setVertex(vDay);
+					break;
+				} // if
+			} // while
+			
+			if (iterDays.hasNext())
+			{
+				return;
+			} // if
+		} // if
 	} // doDateLookup
 	
-	public BaseGraphDate getNextDate()
+	public GraphDate getNextDate()
 	{
 		return this.nextDate;
 	} // getNextDate
