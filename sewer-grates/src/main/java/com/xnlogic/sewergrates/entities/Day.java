@@ -17,6 +17,8 @@ public class Day extends DatePart
 	
 	private Day nextDay = null;
 	
+	private boolean isNewNextDay = false;
+	
 	public Day(int value) throws IllegalDatePartValueException
 	{	
 		super(value);
@@ -26,6 +28,9 @@ public class Day extends DatePart
 	public void setNextDay(Day day)
 	{
 		this.nextDay = day;
+		
+		// set the "dirty" flag
+		this.isNewNextDay = true;
 	} // setNextDay
 	
 	public void save(KeyIndexableGraph graph)
@@ -66,11 +71,10 @@ public class Day extends DatePart
 			assert(!edges.iterator().hasNext());
 
 			// insert the new vertex in between so that the one edge becomes two (i.e. split the edge)
-			Vertex vIn = e.getVertex(Direction.IN);  // head of edge
-			Vertex vOut = e.getVertex(Direction.OUT); // tail of edge
+			Vertex vIn = e.getVertex(Direction.IN);  // head of edge (in this case, the "old" next day
 			
 			// only remove/add if the edge isn't already in there as-is
-			if (vIn != this.nextDay.getBackingVertex() && vOut != this.v)
+			if (this.isNewNextDay)
 			{
 				// get rid of the original edge
 				graph.removeEdge(e);
