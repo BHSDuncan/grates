@@ -1,11 +1,14 @@
 package com.xnlogic.sewergrates.helpers;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
+import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.sewergrates.entities.Day;
-import com.xnlogic.sewergrates.entities.Month;
+import com.xnlogic.sewergrates.entities.DayPart;
+import com.xnlogic.sewergrates.entities.MonthPart;
 import com.xnlogic.sewergrates.exceptions.DayCouldNotBeCreatedFromVertexException;
 import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
 import com.xnlogic.sewergrates.exceptions.MonthCouldNotBeCreatedFromVertexException;
@@ -14,31 +17,84 @@ public class DateGraphHelper
 {
 	public static void checkAndCreateIndices(KeyIndexableGraph graph)
 	{
-		// TODO: Move this into properties file.
+		// TODO: Move this into properties file.  Maybe iterate through all keys for indices via properties file
 		final String dateTypeKey = "dateType";
+		final String refNodeKey = "refNode";
+
+		Set<String> keyNames = new HashSet<String>();
+		keyNames.add(dateTypeKey);
+		keyNames.add(refNodeKey);
 		
 		// grab all indexed keys
 		Set<String> keys = graph.getIndexedKeys(Vertex.class);
 		
-		// if the key doesn't exist in the index, create it
-		if (!keys.contains(dateTypeKey))
+		// if the keys don't exist in the index, create then
+		Iterator<String> itKeys = keyNames.iterator();
+		
+		while (itKeys.hasNext())
 		{
-			graph.createKeyIndex(dateTypeKey, Vertex.class);
-		} // if
+			if (!keys.contains(itKeys.next()))
+			{
+				graph.createKeyIndex(itKeys.next(), Vertex.class);
+			} // if
+		} // while
 	} // checkAndCreateIndices
 	
-	public static Month getMonthFromVertex(Vertex v) throws MonthCouldNotBeCreatedFromVertexException
+	public static void checkAndCreateRefNodes(KeyIndexableGraph graph)
+	{
+		// TODO: Move to properties file as above.
+		final String refNodeKey = "refNode";
+		
+		final String refNodeNextDate = "nextDate";
+		
+		Set<String> refNodeNames = new HashSet<String>();
+		refNodeNames.add(refNodeNextDate);
+		
+		Iterator<String> itRefNodes = refNodeNames.iterator();
+		
+		while (itRefNodes.hasNext())
+		{
+			String value = itRefNodes.next();
+			
+			// look up the ref node
+			Vertex lookup = getSingleVertexByIndexedProp(refNodeKey, value, graph);
+			
+			// if we don't have such a ref node, create it
+			if (lookup == null)
+			{
+				lookup = graph.addVertex(null);				
+				lookup.setProperty(refNodeKey, value);
+			} // if
+		} // while
+	} // checkAndCreateRefNodes
+	
+	public static Vertex getSingleVertexByIndexedProp(String key, String value, KeyIndexableGraph graph)
+	{
+		Vertex toReturn = null;
+		
+		Iterable<Vertex> vertices = graph.getVertices(key, value);
+		Iterator<Vertex> itVerts = vertices.iterator();
+		
+		if (itVerts.hasNext())
+		{
+			toReturn = itVerts.next();
+		} // while
+
+		return toReturn;
+	} // getVertexByIndexedProp
+	
+	public static MonthPart getMonthFromVertex(Vertex v) throws MonthCouldNotBeCreatedFromVertexException
 	{
 		// TODO: Move to properties file.
 		final String PROP_VALUE = "dateValue";
 
 		int monthValue = v.getProperty(PROP_VALUE);
 
-		Month m = null;
+		MonthPart m = null;
 		
 		try
 		{
-			m = new Month(monthValue);
+			m = new MonthPart(monthValue);
 		}
 		catch (IllegalDatePartValueException e)
 		{
@@ -48,18 +104,18 @@ public class DateGraphHelper
 		return m;
 	} // getMonthFromVertex
 
-	public static Day getDayFromVertex(Vertex v) throws DayCouldNotBeCreatedFromVertexException
+	public static DayPart getDayFromVertex(Vertex v) throws DayCouldNotBeCreatedFromVertexException
 	{
 		// TODO: Move to properties file.
 		final String PROP_VALUE = "dateValue";
 
 		int monthValue = v.getProperty(PROP_VALUE);
 
-		Day d = null;
+		DayPart d = null;
 		
 		try
 		{
-			d = new Day(monthValue);
+			d = new DayPart(monthValue);
 		}
 		catch (IllegalDatePartValueException e)
 		{
@@ -67,6 +123,55 @@ public class DateGraphHelper
 		} // try
 		
 		return d;
-	} // getMonthFromVertex
+	} // getDayFromVertex
 
+	public static Vertex getMonthVertexFromDayVertex(Vertex day) throws NullPointerException
+	{
+		if (day == null)
+			throw new NullPointerException("day must be a valid Vertex object");
+	
+		Vertex month = null;
+		
+		Iterable<Vertex> months = day.getVertices(Direction.OUT, "DAY");
+		
+		Iterator<Vertex> itMonths = months.iterator();
+		
+		// a day should only have 1 month attached to it
+		while (itMonths.hasNext())
+		{
+			month = itMonths.next();
+			
+			assert(!itMonths.hasNext());
+		} // while
+
+		itMonths = null;
+		
+		return month;
+	} // getMonthVertexFromDayVertex
+
+	public static Vertex getYearVertexFromMonthVertex(Vertex month) throws NullPointerException
+	{
+		if (month == null)
+			throw new NullPointerException("month must be a valid Vertex object");
+	
+		Vertex year = null;
+		
+		Iterable<Vertex> years = month.getVertices(Direction.OUT, "DAY");
+		
+		Iterator<Vertex> itYears = years.iterator();
+		
+		// a month should only have 1 year attached to it
+		while (itYears.hasNext())
+		{
+			year = itYears.next();
+			
+			assert(!itYears.hasNext());
+		} // while
+
+		itYears = null;
+		
+		return year;
+	} // getYearVertexFromDayVertex
+
+	// TODO: Implement linked list search.
 } // GraphHelper

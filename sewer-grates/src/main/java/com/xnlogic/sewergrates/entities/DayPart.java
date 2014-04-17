@@ -3,29 +3,29 @@ package com.xnlogic.sewergrates.entities;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
-import com.tinkerpop.blueprints.Query;
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.sewergrates.exceptions.DayCouldNotBeCreatedFromVertexException;
 import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
-import com.xnlogic.sewergrates.exceptions.MonthCouldNotBeCreatedFromVertexException;
-import com.xnlogic.sewergrates.helpers.DateGraphHelper;
 
-public class Day extends DatePart
+public class DayPart extends DatePart
 {
 	private final String PROP_DAY = "Day";
 	private final String EDGE_NEXT_DAY = "NEXT";
 	
-	private Day nextDay = null;
+	private DayPart nextDay = null;
 	
 	private boolean isNewNextDay = false;
 	
-	public Day(int value) throws IllegalDatePartValueException
+	public DayPart(int value) throws IllegalDatePartValueException
 	{	
 		super(value);
+		
+		if (value > 31)
+			throw new IllegalDatePartValueException("Illegal day value: " + value);
+
 	} // constructor
 	
 	// should have only one "next" day
-	public void setNextDay(Day day)
+	public void setNextDay(DayPart day)
 	{
 		this.nextDay = day;
 		
@@ -33,20 +33,12 @@ public class Day extends DatePart
 		this.isNewNextDay = true;
 	} // setNextDay
 	
-	public void save(KeyIndexableGraph graph)
+	public Vertex save(KeyIndexableGraph graph)
 	{
-		super.save(graph, this.PROP_DAY);
+		Vertex v = super.save(graph, this.PROP_DAY);
 
 		// can set any additional properties, etc. here...
-
-		// save the next day, just in case
-		if (this.nextDay != null)
-		{
-			this.nextDay.save(graph);
-
-			// update the "next" edge
-			this.updateNextDayEdge(graph);
-		} // if
+		return v;
 	} // save
 	
 	private void updateNextDayEdge(KeyIndexableGraph graph)
@@ -88,4 +80,4 @@ public class Day extends DatePart
 			
 		} // if
 	} // updateNextDayEdge
-} // Day
+} // DayPart

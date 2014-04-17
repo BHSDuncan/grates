@@ -20,7 +20,7 @@ public abstract class DatePart
 	public DatePart(int value) throws IllegalDatePartValueException
 	{
 		if (value < 1)
-			throw new IllegalDatePartValueException();
+			throw new IllegalDatePartValueException("All date parts must be a positive integer.");
 			
 		this.value = value;
 	} // constructor
@@ -49,17 +49,21 @@ public abstract class DatePart
 			this.v = v;
 	} // setVertex
 	
-	public void save(KeyIndexableGraph graph, String datePart)
+	protected Vertex save(KeyIndexableGraph graph, String datePart)
 	{
 		// if the vertex doesn't exist, create it and set the properties
-		if (v == null)
+		// TODO: Put in check to ensure the node doesn't actually exist in the graph, even though this shouldn't be called unless such a check
+		// has been done before.  GraphDate currently does this (GraphDate->Year->DatePart, for example), but consider defence in depth.
+		if (this.v == null)
 		{
-			v = graph.addVertex(null);
+			this.v = graph.addVertex(null);
 		
 			// set the properties
-			v.setProperty(this.PROP_VALUE, this.getValue());
-			v.setProperty(this.PROP_TYPE, datePart);
+			this.v.setProperty(this.PROP_VALUE, this.getValue());
+			this.v.setProperty(this.PROP_TYPE, datePart);
 		} // if
+		
+		return this.v;
 	} // save
 
 	// "default" modifier, so we can only use this method within the same package

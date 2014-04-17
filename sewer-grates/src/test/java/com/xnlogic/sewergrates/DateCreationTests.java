@@ -43,11 +43,10 @@ public class DateCreationTests
 		final int MONTH = 4;
 		final int DAY = 15;
 		
-		GraphDate gd = null;
-		
-		gd = new GraphDate(YEAR, MONTH, DAY, this.graph);
+		GraphDate gd = new GraphDate(YEAR, MONTH, DAY, this.graph);
 	}
 	
+	// This test simply creates one date in the graph and verifies it's persisted as expected.
 	@Test
 	public void testSingleDateCreationAndPersistence() 
 	{
@@ -59,6 +58,7 @@ public class DateCreationTests
 		
 		try
 		{
+			// this should create and persist a new date
 			gd = new GraphDate(YEAR, MONTH, DAY, this.graph);
 		}
 		catch (IllegalDatePartValueException e)
@@ -67,14 +67,11 @@ public class DateCreationTests
 			
 		} // try
 		
-		// persist
-		gd.save();
-		
 		// check that the date was persisted with the correct relationships
 		this.validateEntireDate(YEAR, MONTH, DAY);		
 	} 
 	
-	// This should show idempotence.
+	// This test should show idempotence.
 	@Test
 	public void testSingleDateCreationWithMultipleSaves()
 	{
@@ -94,9 +91,6 @@ public class DateCreationTests
 			
 		} // try
 		
-		// persist
-		gd.save();
-
 		gd = null;
 
 		// get the same date back and try to save it again
@@ -111,219 +105,116 @@ public class DateCreationTests
 			fail("Illegal date part in year, month, or day.");			
 		} // try
 		
-		// persist again
-		gdRetrieve.save();
-		
 		gdRetrieve = null;
 		
 		// check that the date was persisted with the correct relationships (and didn't add any new entities to the graph)
 		this.validateEntireDate(YEAR, MONTH, DAY);
 	}
-	
+		
 	@Test
-	public void testFirstNewNextDate()
+	public void testCreateEntireMonth()
 	{
 		final int YEAR = 2014;
-		final int MONTH = 4;
-		final int DAY = 15;
+		final int MONTH = 1;
+		final int NUM_DAYS = 31;
+		
+		// create the month
+		this.createMonth(YEAR, MONTH, NUM_DAYS);
+		
+		// validate the entire month
+		this.validateMonth(YEAR, MONTH, NUM_DAYS);
+	} // testCreateEntireMonth
 
-		final int DAY_2 = 20;
-		
-		GraphDate gd = null;
-		GraphDate gd2 = null;
-		
-		try
-		{
-			gd = new GraphDate(YEAR, MONTH, DAY, this.graph);
-			gd2 = new GraphDate(YEAR, MONTH, DAY_2, this.graph);
-		}
-		catch (IllegalDatePartValueException e)
-		{
-			fail("Illegal date part in year, month, or day.");
-			
-		} // try
-		
-		gd.setNextDate(gd2);
-		
-		// persist
-		gd.save();
-		
-		gd = null;
-		
-		// check graph representation
-		Vertex day = this.getDayVertexFromYear(YEAR, MONTH, DAY);
-		
-		Iterable<Vertex> nextDays = day.getVertices(Direction.OUT, "NEXT");
-		
-		assertTrue(nextDays.iterator().hasNext());
-		
-		Iterator<Vertex> itVertex = nextDays.iterator();
-		
-		while (itVertex.hasNext())
-		{
-			Vertex v = itVertex.next();
-			
-			assertEquals(DAY_2, v.getProperty("dateValue"));
-			
-			// should only be 1 here
-			assertFalse(itVertex.hasNext());
-		} // while
-	}
-	
 	@Test
-	public void testNewMiddleNextDate()
+	public void testCreateEntireYear()
 	{
 		final int YEAR = 2014;
-		final int MONTH = 4;
-		final int DAY = 15;
+		
+		// create the year (assume not a leap year!)
+		this.createYear(YEAR);
+		
+		// validate the months
+		this.validateMonth(YEAR, 1, 31);
+		this.validateMonth(YEAR, 2, 28);
+		this.validateMonth(YEAR, 3, 31);
+		this.validateMonth(YEAR, 4, 30);
+		this.validateMonth(YEAR, 5, 31);
+		this.validateMonth(YEAR, 6, 30);
+		this.validateMonth(YEAR, 7, 31);
+		this.validateMonth(YEAR, 8, 31);
+		this.validateMonth(YEAR, 9, 30);
+		this.validateMonth(YEAR, 10, 31);
+		this.validateMonth(YEAR, 11, 30);
+		this.validateMonth(YEAR, 12, 31);			
+	} // testCreateEntireYear
 
-		final int DAY_2 = 20;
-
-		final int DAY_3 = 17;
-		
-		// setup the first next date
-		this.testFirstNewNextDate();
-		
-		// insert a new next date
-		GraphDate gd = null;
-		GraphDate gd2 = null;
-		
-		try
-		{
-			gd = new GraphDate(YEAR, MONTH, DAY, this.graph);
-			gd2 = new GraphDate(YEAR, MONTH, DAY_3, this.graph);
-		}
-		catch (IllegalDatePartValueException e)
-		{
-			fail("Illegal date part in year, month, or day.");
-			
-		} // try
-		
-		gd.setNextDate(gd2);
-		
-		// persist
-		gd.save();
-		
-		gd = null;
-
-		// check graph representation
-		Vertex day = this.getDayVertexFromYear(YEAR, MONTH, DAY);
-		Vertex day2 = null;
-		
-		Iterable<Vertex> nextDays = day.getVertices(Direction.OUT, "NEXT");
-		
-		assertTrue(nextDays.iterator().hasNext());
-		
-		Iterator<Vertex> itVertex = nextDays.iterator();
-		
-		// check newly created "next" day is next in line
-		while (itVertex.hasNext())
-		{
-			day2 = itVertex.next();
-			
-			assertEquals(DAY_3, day2.getProperty("dateValue"));
-			
-			// should only be 1 here
-			assertFalse(itVertex.hasNext());
-		} // while
-
-		itVertex = null;
-		
-		// ...and now check that the "old" next day is still in the right order
-		nextDays = null;
-		
-		nextDays = day2.getVertices(Direction.OUT, "NEXT");
-		
-		assertTrue(nextDays.iterator().hasNext());
-		
-		itVertex = nextDays.iterator();
-		
-		while (itVertex.hasNext())
-		{
-			Vertex v = itVertex.next();
-			
-			assertEquals(DAY_2, v.getProperty("dateValue"));
-			
-			// should only be 1 here
-			assertFalse(itVertex.hasNext());
-		} // while
-
-	}
-	
-	private Vertex getDayVertexFromYear(int yearValue, int monthValue, int dayValue)
+	private void validateMonth(int yearValue, int monthValue, int totalDays)
 	{
-		Iterable<Vertex> years = this.graph.getVertices("dateValue", yearValue);
-		
-		Iterator<Vertex> it = years.iterator();
-		Vertex year = null;
-		
-		while (it.hasNext())
-		{
-			year = it.next();			
-		} // while
-				
-		it = null;
-		
-		if ((Integer)year.getProperty("dateValue") != yearValue)
-		{
-			return null;
-		} // if
-		
-		// make sure we have MONTH relationships
-		Iterable<Edge> monthEdges = year.getEdges(Direction.OUT, "MONTH");
-		
-		Iterator<Edge> itMonthEdges = monthEdges.iterator();
+		Vertex year = this.getAndValidateYearFromGraph(yearValue);
 
-		Vertex month = null;
-		Vertex monthTemp = null;
+		Vertex month = this.getAndValidateMonthFromGraph(year, monthValue);
 		
-		while (itMonthEdges.hasNext())
+		Iterable<Vertex> days = month.getVertices(Direction.OUT, "DAY");
+		
+		assertNotNull(days);
+		
+		Iterator<Vertex> itDays = days.iterator();
+		
+		assertTrue(itDays.hasNext());
+		
+		int numDays = 0;
+		
+		while (itDays.hasNext())
 		{
-			Edge e = itMonthEdges.next();
-			
-			monthTemp = e.getVertex(Direction.IN);
-			
-			if ((Integer)monthTemp.getProperty("dateValue") == monthValue)
-			{
-				month = monthTemp;
-				break;
-			} // if
+			Vertex v = itDays.next();
+			//System.out.println("Month " + monthValue + " has day: " + v.getProperty("dateValue"));
+			numDays++;
 		} // while
 		
-		itMonthEdges = null;
-
-		if (month == null)
-		{
-			return null;
-		} // if
-		
-		// make sure we have DAY relationships
-		Iterable<Edge> dayEdges = month.getEdges(Direction.OUT, "DAY");
-		
-		Iterator<Edge> itDayEdges = dayEdges.iterator();
-		
-		Vertex day = null;
-		Vertex dayTemp = null;
-		
-		while (itDayEdges.hasNext())
-		{
-			Edge e = itDayEdges.next();
-		
-			dayTemp = e.getVertex(Direction.IN);
-			
-			if ((Integer)dayTemp.getProperty("dateValue") == dayValue)
-			{
-				day = dayTemp;
-				break;
-			} // if
-		} // while
-
-		itDayEdges = null;
-
-		return day;
-	}
+		assertEquals(totalDays, numDays);
+	} // validateMonth
 	
-	private void validateEntireDate(int yearValue, int monthValue, int dayValue)
+	private void createMonth(int year, int month, int numDays)
+	{		
+		// create an entire month!
+		for (int i = 0; i < numDays; i++)
+		{
+			GraphDate gd = null;
+
+			try
+			{
+				// this should create and persist a new date
+				gd = new GraphDate(year, month, (i + 1), this.graph);
+			}
+			catch (IllegalDatePartValueException e)
+			{
+				fail("Illegal date part in year, month, or day.");
+			}
+			finally
+			{
+				// just to be safe
+				gd = null;
+			} // try			
+		} // for
+	} // createMonth
+
+	private void createYear(int year)
+	{
+		this.createMonth(year, 1, 31);
+		this.createMonth(year, 2, 28);
+		this.createMonth(year, 3, 31);
+		this.createMonth(year, 4, 30);
+		this.createMonth(year, 5, 31);
+		this.createMonth(year, 6, 30);
+		this.createMonth(year, 7, 31);
+		this.createMonth(year, 8, 31);
+		this.createMonth(year, 9, 30);
+		this.createMonth(year, 10, 31);
+		this.createMonth(year, 11, 30);
+		this.createMonth(year, 12, 31);
+	} // createYear
+	
+	private Vertex getAndValidateYearFromGraph(int yearValue)
 	{
 		Iterable<Vertex> years = this.graph.getVertices("dateValue", yearValue);
 		
@@ -335,99 +226,101 @@ public class DateCreationTests
 		assertNotNull(it.hasNext());
 		
 		Vertex year = null;
+		int numYearsFound = 0;
 		
 		while (it.hasNext())
 		{
-			year = it.next();
+			Vertex v = it.next();
 			
-			assertEquals("Year", year.getProperty("dateType"));
-			assertEquals(yearValue, year.getProperty("dateValue"));
+			if ((Integer)v.getProperty("dateValue") == yearValue)
+			{	
+				year = v;
+				numYearsFound++;
+				assertEquals("Year", year.getProperty("dateType"));
+			} 
 			
+			// verify we only have the one year
 			assertFalse(it.hasNext());
 		} // while
 				
-		it = null;
+		assertEquals(1, numYearsFound);
 		
-		// make sure we have MONTH relationships
-		Iterable<Edge> monthEdges = year.getEdges(Direction.OUT, "MONTH");
+		it = null;		
 		
-		assertNotNull(monthEdges);
-		
-		Iterator<Edge> itMonthEdges = monthEdges.iterator();
-		
-		assertNotNull(itMonthEdges);
-		assertTrue(itMonthEdges.hasNext());
+		return year;
+	} // getAndValidateYear
 
-		List<Vertex> months = new ArrayList<Vertex>();
-
-		int numEdges = 0;
+	private Vertex getAndValidateMonthFromGraph(Vertex year, int monthValue)
+	{
+		Iterable<Vertex> months = year.getVertices(Direction.OUT, "MONTH");
 		
-		while (itMonthEdges.hasNext())
-		{
-			Edge e = itMonthEdges.next();
-			
-			numEdges++;
-			
-			assertEquals(e.getLabel(), "MONTH");
-			
-			months.add(e.getVertex(Direction.IN));
-			
-			assertFalse(itMonthEdges.hasNext());
-		} // while
-
-		assertEquals(1, numEdges);
+		assertNotNull(months);
 		
-		itMonthEdges = null;
+		Iterator<Vertex> itMonths = months.iterator();
 		
-		// verify month from year
+		assertNotNull(itMonths);
+		assertTrue(itMonths.hasNext());
+		
+		int numMonthsFound = 0;
+		
 		Vertex month = null;
 		
-		for (int i = 0; i < months.size(); i++)
+		while (itMonths.hasNext())
 		{
-			month = months.get(i);
-					
-			assertEquals(monthValue, month.getProperty("dateValue"));
-			assertEquals("Month", month.getProperty("dateType"));
-		} // for
-		
-		// make sure we have DAY relationships
-		Iterable<Edge> dayEdges = month.getEdges(Direction.OUT, "DAY");
-		
-		assertNotNull(dayEdges);
-		
-		Iterator<Edge> itDayEdges = dayEdges.iterator();
-		
-		assertNotNull(itDayEdges);
-		assertNotNull(itDayEdges.hasNext());
+			Vertex v = itMonths.next();
+			
+			if ((Integer)v.getProperty("dateValue") == monthValue)
+			{
+				month = v;
+				numMonthsFound++;			
 
-		List<Vertex> days = new ArrayList<Vertex>();
-		
-		numEdges = 0;
-		
-		while (itDayEdges.hasNext())
-		{
-			Edge e = itDayEdges.next();
-		
-			numEdges++;
-			
-			assertEquals("DAY", e.getLabel());
-			
-			days.add(e.getVertex(Direction.IN));
-			
-			assertFalse(itDayEdges.hasNext());
+				assertEquals("Month", month.getProperty("dateType"));
+			} // if
 		} // while
 
-		itDayEdges = null;
+		assertEquals(1, numMonthsFound);
 		
-		assertEquals(1, numEdges);
+		itMonths = null;
 		
-		// verify day from month
+		return month;
+	} // getAndValidateMonth
+
+	// this should validate that there is exactly ONE of the triple (y, m, d) in the DB, e.g. we don't have two July 1, 1980's
+	private void validateEntireDate(int yearValue, int monthValue, int dayValue)
+	{
+		Vertex year = this.getAndValidateYearFromGraph(yearValue);
 		
-		for (Vertex day : days)
+		// make sure we have a related MONTH
+		Vertex month = this.getAndValidateMonthFromGraph(year, monthValue);
+		
+		// make sure we have a related DAY
+		Iterable<Vertex> days = month.getVertices(Direction.OUT, "DAY");
+		
+		assertNotNull(days);
+		
+		Iterator<Vertex> itDays = days.iterator();
+		
+		assertNotNull(itDays);
+		assertNotNull(itDays.hasNext());
+		
+		int numDaysFound = 0;
+		
+		Vertex day = null;
+		
+		while (itDays.hasNext())
 		{
-			assertEquals(dayValue, day.getProperty("dateValue"));
-			assertEquals("Day", day.getProperty("dateType"));
-		} // for		
+			day = itDays.next();
+			
+			if ((Integer)day.getProperty("dateValue") == dayValue)
+			{
+				assertEquals("Day", day.getProperty("dateType"));
+				numDaysFound++;			
+			} // if
+		} // while
+
+		itDays = null;
+		
+		assertEquals(1, numDaysFound);
 	} // validateEntireDate
 
 	private int getNumberOfSpecificEdgesFromVertex(Vertex v, String edgeLabel)

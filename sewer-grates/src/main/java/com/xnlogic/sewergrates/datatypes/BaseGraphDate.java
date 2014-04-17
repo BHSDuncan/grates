@@ -7,22 +7,22 @@ import com.xnlogic.sewergrates.entities.*;
 public abstract class BaseGraphDate 
 {	
 	// underlying representation; clients shouldn't know/care about these
-	protected Year year;
-	protected Month month;
-	protected Day day;
+	protected YearPart year;
+	protected MonthPart month;
+	protected DayPart day;
 
 	// getters	
-	public Year getYear()
+	public YearPart getYear()
 	{
 		return this.year;
 	} // getYear
 	
-	public Month getMonth()
+	public MonthPart getMonth()
 	{
 		return this.month;
 	} // getMonth
 	
-	public Day getDay()
+	public DayPart getDay()
 	{
 		return this.day;
 	} // getDay
