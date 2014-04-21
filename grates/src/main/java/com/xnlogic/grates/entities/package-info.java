@@ -5,4 +5,4 @@
  * @author duncan
  *
  */
-package com.xnlogic.sewergrates.helpers;
+package com.xnlogic.grates.entities;

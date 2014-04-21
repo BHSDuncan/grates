@@ -1,7 +1,7 @@
-package com.xnlogic.sewergrates.datatypes;
+package com.xnlogic.grates.datatypes;
 
 import com.tinkerpop.blueprints.KeyIndexableGraph;
-import com.xnlogic.sewergrates.entities.*;
+import com.xnlogic.grates.entities.*;
 
 // year parts of year, month, and day should be final, so no need for setters
 public abstract class BaseGraphDate 

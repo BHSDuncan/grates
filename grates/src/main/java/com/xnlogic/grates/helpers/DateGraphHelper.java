@@ -1,4 +1,4 @@
-package com.xnlogic.sewergrates.helpers;
+package com.xnlogic.grates.helpers;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -7,11 +7,11 @@ import java.util.Set;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.sewergrates.entities.DayPart;
-import com.xnlogic.sewergrates.entities.MonthPart;
-import com.xnlogic.sewergrates.exceptions.DayCouldNotBeCreatedFromVertexException;
-import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
-import com.xnlogic.sewergrates.exceptions.MonthCouldNotBeCreatedFromVertexException;
+import com.xnlogic.grates.entities.DayPart;
+import com.xnlogic.grates.entities.MonthPart;
+import com.xnlogic.grates.exceptions.DayCouldNotBeCreatedFromVertexException;
+import com.xnlogic.grates.exceptions.IllegalDatePartValueException;
+import com.xnlogic.grates.exceptions.MonthCouldNotBeCreatedFromVertexException;
 
 public class DateGraphHelper 
 {

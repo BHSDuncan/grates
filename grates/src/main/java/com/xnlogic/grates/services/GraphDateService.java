@@ -1,7 +1,7 @@
-package com.xnlogic.sewergrates.services;
+package com.xnlogic.grates.services;
 
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.sewergrates.datatypes.GraphDate;
+import com.xnlogic.grates.datatypes.GraphDate;
 
 public interface GraphDateService<T extends Vertex>
 {

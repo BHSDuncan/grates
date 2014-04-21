@@ -5,4 +5,4 @@
  * @author duncan
  *
  */
-package com.xnlogic.sewergrates.exceptions;
+package com.xnlogic.grates.datatypes;

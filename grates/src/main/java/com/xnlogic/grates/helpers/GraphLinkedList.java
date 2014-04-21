@@ -1,4 +1,4 @@
-package com.xnlogic.sewergrates.helpers;
+package com.xnlogic.grates.helpers;
 
 import com.tinkerpop.blueprints.Vertex;
 

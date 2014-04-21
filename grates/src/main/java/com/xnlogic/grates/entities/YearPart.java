@@ -1,8 +1,8 @@
-package com.xnlogic.sewergrates.entities;
+package com.xnlogic.grates.entities;
 
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
+import com.xnlogic.grates.exceptions.IllegalDatePartValueException;
 
 public class YearPart extends DatePart
 {

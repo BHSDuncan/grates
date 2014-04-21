@@ -1,4 +1,4 @@
-package com.xnlogic.sewergrates.datatypes;
+package com.xnlogic.grates.datatypes;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,10 +14,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.sewergrates.entities.*;
-import com.xnlogic.sewergrates.exceptions.DataIntegrityException;
-import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
-import com.xnlogic.sewergrates.helpers.DateGraphHelper;
+import com.xnlogic.grates.entities.*;
+import com.xnlogic.grates.exceptions.DataIntegrityException;
+import com.xnlogic.grates.exceptions.IllegalDatePartValueException;
+import com.xnlogic.grates.helpers.DateGraphHelper;
 
 public class GraphDate extends BaseGraphDate 
 {	

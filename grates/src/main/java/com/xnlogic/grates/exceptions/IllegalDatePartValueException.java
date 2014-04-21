@@ -1,4 +1,4 @@
-package com.xnlogic.sewergrates.exceptions;
+package com.xnlogic.grates.exceptions;
 
 public class IllegalDatePartValueException extends Exception 
 {

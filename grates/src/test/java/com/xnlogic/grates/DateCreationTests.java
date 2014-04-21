@@ -1,4 +1,4 @@
-package com.xnlogic.sewergrates;
+package com.xnlogic.grates;
 
 import static org.junit.Assert.*;
 
@@ -15,9 +15,9 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
-import com.xnlogic.sewergrates.datatypes.GraphDate;
-import com.xnlogic.sewergrates.exceptions.DataIntegrityException;
-import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
+import com.xnlogic.grates.datatypes.GraphDate;
+import com.xnlogic.grates.exceptions.DataIntegrityException;
+import com.xnlogic.grates.exceptions.IllegalDatePartValueException;
 
 public class DateCreationTests 
 {

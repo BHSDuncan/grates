@@ -1,11 +1,11 @@
-package com.xnlogic.sewergrates.entities;
+package com.xnlogic.grates.entities;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
+import com.xnlogic.grates.exceptions.IllegalDatePartValueException;
 
 // Represents a date part in the graph.
 public abstract class DatePart 
