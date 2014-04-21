@@ -37,7 +37,7 @@ public class NextDateTests
 		this.graph.shutdown();
 		this.graph = null;
 	}
-
+/*
 	@Test
 	public void testFirstNewNextDateSameYearAndMonth()
 	{
@@ -248,5 +248,5 @@ public class NextDateTests
 
 		return day;
 	}
-
+*/
 } // NextDateTests
