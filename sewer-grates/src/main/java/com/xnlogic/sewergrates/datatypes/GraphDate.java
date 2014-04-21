@@ -25,7 +25,7 @@ public class GraphDate extends BaseGraphDate
 	
 	private final KeyIndexableGraph graph;
 	
-	public GraphDate(int yearValue, int monthValue, int dayValue, KeyIndexableGraph graph) throws IllegalDatePartValueException, NullPointerException
+	public GraphDate(int yearValue, int monthValue, int dayValue, KeyIndexableGraph graph) throws IllegalDatePartValueException, NullPointerException, DataIntegrityException
 	{
 		if (graph == null)
 			throw new NullPointerException("graph must be a valid KeyIndexableGraph object.");
@@ -47,9 +47,9 @@ public class GraphDate extends BaseGraphDate
 			this.syncDateNodeBackings();
 			//System.out.println("Wrote out year: " + yearValue + ", month: " + monthValue + ", day: " + dayValue);
 		}
-		catch (DataIntegrityException e)
+		catch (DataIntegrityException die)
 		{
-			
+			throw die;
 		} // try
 	} // constructor
 
@@ -95,11 +95,6 @@ public class GraphDate extends BaseGraphDate
 				// found more than one year with the same value; we have a problem...
 				throw new DataIntegrityException("More than one year of the same value found!");
 			}
-			else if (numNodes == 0)
-			{
-				// we couldn't find the month for the year, so, create it!
-				vYear= this.year.save(this.graph);
-			} // if
 		}
 		else
 		{
@@ -269,21 +264,31 @@ public class GraphDate extends BaseGraphDate
 		} // if
 		*/
 	} // getDateNodeBacking
-	
+	/*
 	public GraphDate getNextDate()
 	{
 		return this.nextDate;
 	} // getNextDate
+	*/
 	
-	public String getISODate() {
-		throw new NotImplementedException();
-	}
+	// PRE: year, month, and day are all valid objects of their respective types
+	public String getISODate() 
+	{
+		String formattedDate = "";
+		
+		formattedDate = String.format("%d-%02d-%02d", this.year.getValue(), this.month.getValue(), this.day.getValue());
+		
+		return formattedDate;
+	} // getISODate
 
+	/*
 	private void setNextDate(GraphDate nextDate)
 	{
 		this.nextDate = nextDate;
 	} // setNextDate
-
+*/
+	
+	// Since date parts don't have any knowledge of other date parts, do the "related" date part validation here.
 	private void valiDate(int yearValue, int monthValue, int dayValue) throws IllegalDatePartValueException
 	{
 		// SPECIFIC RULES FOR DATES
@@ -370,13 +375,15 @@ public class GraphDate extends BaseGraphDate
 			} // if			
 		} // while
 	} // valiDate
-	
-	// questions
+/*	
+	// BEGIN questions
 	public boolean isLaterThan(GraphDate otherDate)
 	{
 		throw new NotImplementedException();
 	} // isLaterThan
 
+	// END questions
+	
 	// persist to the DB
 	public void saveNotImplemented()
 	{
@@ -386,7 +393,8 @@ public class GraphDate extends BaseGraphDate
 //			this.day.setNextDay(this.nextDate.getDay());
 		} // if
 	} // save
-	
+*/
+
 	@Override
 	public boolean equals(Object obj)
 	{

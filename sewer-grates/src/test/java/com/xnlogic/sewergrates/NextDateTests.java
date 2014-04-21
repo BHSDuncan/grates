@@ -17,6 +17,7 @@ import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.xnlogic.sewergrates.datatypes.GraphDate;
+import com.xnlogic.sewergrates.exceptions.DataIntegrityException;
 import com.xnlogic.sewergrates.exceptions.IllegalDatePartValueException;
 
 // TODO: Implement these properly. These are a relic from earlier thinking and incomplete, and will thereforefail.
@@ -57,6 +58,10 @@ public class NextDateTests
 		catch (IllegalDatePartValueException e)
 		{
 			fail("Illegal date part in year, month, or day.");
+		}
+		catch (DataIntegrityException die)
+		{
+			fail(die.getMessage());
 			
 		} // try
 		
@@ -113,6 +118,10 @@ public class NextDateTests
 		catch (IllegalDatePartValueException e)
 		{
 			fail("Illegal date part in year, month, or day.");
+		}
+		catch (DataIntegrityException die)
+		{
+			fail(die.getMessage());
 			
 		} // try
 		

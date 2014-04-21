@@ -39,7 +39,7 @@ public class DateGraphHelper
 			} // if
 		} // while
 	} // checkAndCreateIndices
-	
+	/*
 	public static void checkAndCreateRefNodes(KeyIndexableGraph graph)
 	{
 		// TODO: Move to properties file as above.
@@ -172,6 +172,6 @@ public class DateGraphHelper
 		
 		return year;
 	} // getYearVertexFromDayVertex
-
+*/
 	// TODO: Implement linked list search.
 } // GraphHelper

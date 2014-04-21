@@ -31,24 +31,7 @@ public abstract class DatePart
 	{
 		return value;	
 	} // getValue
-	
-	// setters
-	
-	public void setValue(int value) throws IllegalDatePartValueException
-	{
-		if (value < 0)
-			throw new IllegalDatePartValueException();
 		
-		this.value = value;
-	}
-	
-	// only set a vertex if it hasn't been set already (i.e. this is coming from the outside)
-	public void setVertex(Vertex v)
-	{
-		if (this.v == null)
-			this.v = v;
-	} // setVertex
-	
 	protected Vertex save(KeyIndexableGraph graph, String datePart)
 	{
 		// if the vertex doesn't exist, create it and set the properties

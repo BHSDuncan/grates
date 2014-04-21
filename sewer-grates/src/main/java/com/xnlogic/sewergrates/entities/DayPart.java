@@ -23,7 +23,7 @@ public class DayPart extends DatePart
 			throw new IllegalDatePartValueException("Illegal day value: " + value);
 
 	} // constructor
-	
+/*	
 	// should have only one "next" day
 	public void setNextDay(DayPart day)
 	{
@@ -32,7 +32,7 @@ public class DayPart extends DatePart
 		// set the "dirty" flag
 		this.isNewNextDay = true;
 	} // setNextDay
-	
+*/	
 	public Vertex save(KeyIndexableGraph graph)
 	{
 		Vertex v = super.save(graph, this.PROP_DAY);
@@ -40,7 +40,7 @@ public class DayPart extends DatePart
 		// can set any additional properties, etc. here...
 		return v;
 	} // save
-	
+/*	
 	private void updateNextDayEdge(KeyIndexableGraph graph)
 	{
 		// save the relationship with the next day, provided it doesn't yet exist
@@ -80,4 +80,5 @@ public class DayPart extends DatePart
 			
 		} // if
 	} // updateNextDayEdge
+	*/
 } // DayPart
