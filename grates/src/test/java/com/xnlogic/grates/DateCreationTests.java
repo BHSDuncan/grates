@@ -64,6 +64,7 @@ public class DateCreationTests
         final int dayValue = 30;
         
         Grate g = new Grate(calendarName, this.graph);
+        
         g.init();
         
         GraphDate gd = g.findOrCreateDate(yearValue, monthValue, dayValue);
@@ -79,6 +80,7 @@ public class DateCreationTests
         final int dayValue = 30;
         
         Grate g = new Grate(calendarName, this.graph);
+        
         g.init();
         
         GraphDate gd = g.findOrCreateDate(yearValue, monthValue, dayValue);
@@ -86,6 +88,46 @@ public class DateCreationTests
         
         this.verifyDateExistsInGraphForCalendarExactlyOnce(yearValue, monthValue, dayValue, calendarName);               
     }
+    
+    @Test
+    public void createEntireMonthTest() {
+        final String calendarName = "TEST_CALENDAR";
+        final int YEAR = 2014;
+        final int MONTH = 1;
+        final int NUM_DAYS = 31;
+
+        this.createMonth(calendarName, YEAR, MONTH, NUM_DAYS);
+
+        this.validateMonth(calendarName, YEAR, MONTH, NUM_DAYS);
+    }
+    
+    @Test
+    public void testCreateEntireYear()
+    {
+        final String calendarName = "TEST_CALENDAR";
+        final int YEAR = 2014;
+
+        // create the year (assume not a leap year!)
+        this.createYear(calendarName, YEAR);
+
+        // validate the months
+        this.validateMonth(calendarName, YEAR, 1, 31);
+        this.validateMonth(calendarName, YEAR, 2, 28);
+        this.validateMonth(calendarName, YEAR, 3, 31);
+        this.validateMonth(calendarName, YEAR, 4, 30);
+        this.validateMonth(calendarName, YEAR, 5, 31);
+        this.validateMonth(calendarName, YEAR, 6, 30);
+        this.validateMonth(calendarName, YEAR, 7, 31);
+        this.validateMonth(calendarName, YEAR, 8, 31);
+        this.validateMonth(calendarName, YEAR, 9, 30);
+        this.validateMonth(calendarName, YEAR, 10, 31);
+        this.validateMonth(calendarName, YEAR, 11, 30);
+        this.validateMonth(calendarName, YEAR, 12, 31);           
+    } 
+    
+    //
+    // HELPER METHODS
+    //
     
     private void verifyDateExistsInGraphForCalendar(int yearValue, int monthValue, int dayValue, String calendarName) {
         Vertex calRoot = GraphHelperFunctions.getCalendarRoot(calendarName, this.graph);
@@ -168,4 +210,56 @@ public class DateCreationTests
         
         return size;
     }
+    
+    private void createMonth(String calendarName, int year, int month, int numDays) {
+        Grate g = new Grate(calendarName, this.graph);
+        
+        g.init();
+        
+        for (int i = 0; i < numDays; i++) {
+            g.findOrCreateDate(year, month, (i+1));
+        } // for
+    } 
+    
+    private void createYear(String calendarName, int year)
+    {
+        this.createMonth(calendarName, year, 1, 31);
+        this.createMonth(calendarName, year, 2, 28);
+        this.createMonth(calendarName, year, 3, 31);
+        this.createMonth(calendarName, year, 4, 30);
+        this.createMonth(calendarName, year, 5, 31);
+        this.createMonth(calendarName, year, 6, 30);
+        this.createMonth(calendarName, year, 7, 31);
+        this.createMonth(calendarName, year, 8, 31);
+        this.createMonth(calendarName, year, 9, 30);
+        this.createMonth(calendarName, year, 10, 31);
+        this.createMonth(calendarName, year, 11, 30);
+        this.createMonth(calendarName, year, 12, 31);
+    } // createYear
+
+    private void validateMonth(String calendarName, int yearValue, int monthValue, int totalDays)
+    {
+        Vertex calRoot = GraphHelperFunctions.getCalendarRoot(calendarName, this.graph);
+        
+        Vertex year = GraphHelperFunctions.getYearFromGraph(yearValue, calRoot);
+
+        Vertex month = GraphHelperFunctions.getMonthFromGraph(monthValue, year);
+
+        Iterable<Vertex> days = month.getVertices(Direction.OUT, "DAY");
+
+        assertNotNull(days);
+
+        Iterator<Vertex> itDays = days.iterator();
+
+        assertTrue(itDays.hasNext());
+
+        int numDays = 0;
+
+        while (itDays.hasNext()) {
+            itDays.next();
+            numDays++;
+        } // while
+
+        assertEquals(totalDays, numDays);
+    } // validateMonth
 }

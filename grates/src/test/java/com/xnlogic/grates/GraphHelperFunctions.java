@@ -7,7 +7,6 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.grates.datatypes.Grate;
 
 public class GraphHelperFunctions {
     private static final String CAL_ROOT_PROP = "grates_calendar_name";
