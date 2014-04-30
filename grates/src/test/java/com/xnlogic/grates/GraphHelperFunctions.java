@@ -156,13 +156,7 @@ public class GraphHelperFunctions {
         
         return toReturn;            
     }
-    
-    public static Grate createGrate(String calendarName, KeyIndexableGraph graph) {
-        Grate g = new Grate(calendarName, graph);
         
-        return g;
-    }
-    
     public static int getCalendarCount(String calendarName, KeyIndexableGraph graph) {
         int numCalendars = 0;
         

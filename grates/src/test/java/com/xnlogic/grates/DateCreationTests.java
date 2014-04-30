@@ -39,7 +39,7 @@ public class DateCreationTests
     public void instantiateValidGrateTest() {
         final String calendarName = "TEST_CALENDAR";
         
-        Grate g = GraphHelperFunctions.createGrate(calendarName, this.graph);
+        Grate g = new Grate(calendarName, this.graph);
         
         assertNotNull(g);
         
@@ -63,7 +63,7 @@ public class DateCreationTests
         final int monthValue = 4;
         final int dayValue = 30;
         
-        Grate g = GraphHelperFunctions.createGrate(calendarName, this.graph);
+        Grate g = new Grate(calendarName, this.graph);
         g.init();
         
         GraphDate gd = g.findOrCreateDate(yearValue, monthValue, dayValue);
@@ -78,7 +78,7 @@ public class DateCreationTests
         final int monthValue = 4;
         final int dayValue = 30;
         
-        Grate g = GraphHelperFunctions.createGrate(calendarName, this.graph);
+        Grate g = new Grate(calendarName, this.graph);
         g.init();
         
         GraphDate gd = g.findOrCreateDate(yearValue, monthValue, dayValue);
