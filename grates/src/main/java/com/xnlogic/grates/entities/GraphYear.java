@@ -5,20 +5,17 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 
-public class GraphYear extends AbstractGraphDate 
-{
+public class GraphYear extends AbstractGraphDate {
 	private final String MONTH_VERT_PROP = "grates_month";
     private final String MONTH_EDGE_PROP = "value";
 
     private final String MONTH_EDGE_LABEL = "MONTH";
     
-	public GraphYear(Vertex v)
-	{
+	public GraphYear(Vertex v) {
         this.backingVertex = v;
 	} // constructor
     
-    public GraphMonth findMonth(int monthValue)
-    {
+    public GraphMonth findMonth(int monthValue) {
     	// TODO: consider throwing exception here
     	if (this.backingVertex == null)
     		return null;
@@ -41,8 +38,7 @@ public class GraphYear extends AbstractGraphDate
         return toReturn;
     } // findMonth
     
-    public GraphMonth findOrCreateMonth(int monthValue, KeyIndexableGraph graph)
-    {
+    public GraphMonth findOrCreateMonth(int monthValue, KeyIndexableGraph graph) {
     	GraphMonth graphMonth = this.findMonth(monthValue);
 
     	// if we've found the month in question, return it!
@@ -68,8 +64,7 @@ public class GraphYear extends AbstractGraphDate
     } // findOrCreateMonth
 
     @Override
-	long getUnixDate() 
-    {
+	long getUnixDate() {
         return 0;
     } // getUnixDate
 } // GraphYear

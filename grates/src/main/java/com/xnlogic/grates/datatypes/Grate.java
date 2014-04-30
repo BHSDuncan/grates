@@ -7,8 +7,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.entities.GraphYear;
 
-public class Grate 
-{
+public class Grate {
     private final String calendarName;
     private final KeyIndexableGraph graph;
         
@@ -19,16 +18,14 @@ public class Grate
     
     private Vertex backingVertex = null;
     
-    public Grate(String calendarName, KeyIndexableGraph graph)
-    {
+    public Grate(String calendarName, KeyIndexableGraph graph) {
         this.calendarName = calendarName;
         this.graph = graph;
     } // constructor
     
     // This should always be called after instantiating and before making any calls to a Grate.
     // This method allows Grates to see if the specified calendar currently exists and, if not, creates and initializes it
-    public void init()
-    {
+    public void init() {
         // try and find the specified calendar root
         Iterable<Vertex> calendarRoots = this.graph.getVertices(this.CAL_ROOT_PROP, this.calendarName);
         
@@ -54,8 +51,7 @@ public class Grate
         } // if
     } // init
     
-    public GraphDate findDate(int yearValue, int monthValue, int dayValue)
-    {
+    public GraphDate findDate(int yearValue, int monthValue, int dayValue) {
         return this.findYear(yearValue)
                    .findMonth(monthValue)
                    .findDay(dayValue);
@@ -63,15 +59,13 @@ public class Grate
     } // findDate
 
     // PRE: A transaction must already be started.    
-    public GraphDate findOrCreateDate(int yearValue, int monthValue, int dayValue)
-    {
+    public GraphDate findOrCreateDate(int yearValue, int monthValue, int dayValue) {
         return this.findOrCreateYear(yearValue)
                    .findOrCreateMonth(monthValue, this.graph)
                    .findOrCreateDay(dayValue, this.graph);
     } // findOrCreateDate
 
-    private GraphYear findYear(int yearValue)
-    {
+    private GraphYear findYear(int yearValue) {
         // TODO: consider throwing exception here
         if (this.backingVertex == null)
             return null;
@@ -94,8 +88,7 @@ public class Grate
         return toReturn;    
     } // findYear
     
-    private GraphYear findOrCreateYear(int yearValue)
-    {
+    private GraphYear findOrCreateYear(int yearValue) {
         GraphYear graphYear = this.findYear(yearValue);
 
         // if we've found the year in question, return it!

@@ -5,20 +5,17 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 
-public class GraphMonth extends AbstractGraphDate 
-{
+public class GraphMonth extends AbstractGraphDate {
     private final String DAY_VERT_PROP = "grates_day";
     private final String DAY_EDGE_PROP = "value";
 
     private final String DAY_EDGE_LABEL = "DAY";
     
-    public GraphMonth(Vertex v)
-    {
+    public GraphMonth(Vertex v) {
         this.backingVertex = v;
     } // constructor
 
-    public GraphDate findDay(int dayValue)
-    {
+    public GraphDate findDay(int dayValue) {
     	// TODO: consider throwing exception here
     	if (this.backingVertex == null)
     		return null;
@@ -41,8 +38,7 @@ public class GraphMonth extends AbstractGraphDate
         return toReturn;
     } // findDay
 
-    public GraphDate findOrCreateDay(int dayValue, KeyIndexableGraph graph)
-    {
+    public GraphDate findOrCreateDay(int dayValue, KeyIndexableGraph graph) {
         GraphDate graphDate = this.findDay(dayValue);
         
         // if we've found the day in question, return it!
@@ -64,8 +60,7 @@ public class GraphMonth extends AbstractGraphDate
     } // findOrCreateDay
 
     @Override
-	long getUnixDate() 
-    {
+	long getUnixDate() {
         return 0;
     } // getUnixDate
 
