@@ -17,7 +17,7 @@ public class GraphYear extends AbstractGraphDate
         this.backingVertex = v;
 	} // constructor
     
-    private GraphMonth findMonth(int monthValue)
+    public GraphMonth findMonth(int monthValue)
     {
     	// TODO: consider throwing exception here
     	if (this.backingVertex == null)
