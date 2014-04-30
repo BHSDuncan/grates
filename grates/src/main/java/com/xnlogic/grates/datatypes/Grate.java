@@ -1,7 +1,6 @@
 package com.xnlogic.grates.datatypes;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.tinkerpop.blueprints.Direction;
@@ -71,8 +70,9 @@ public class Grate {
 
     private GraphYear findYear(int yearValue) {
         // TODO: consider throwing exception here
-        if (this.backingVertex == null)
+        if (this.backingVertex == null) {
             return null;
+        } // if
         
         GraphYear toReturn = null;
         
@@ -112,8 +112,6 @@ public class Grate {
         keyNames.add(this.CAL_ROOT_PROP);
 
         Set<String> keys = this.graph.getIndexedKeys(Vertex.class);
-
-        Iterator<String> itKeys = keyNames.iterator();
 
         for (String key : keyNames) {
             if (!keys.contains(key)) {

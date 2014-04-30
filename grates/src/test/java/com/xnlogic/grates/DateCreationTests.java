@@ -2,6 +2,8 @@ package com.xnlogic.grates;
 
 import static org.junit.Assert.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,13 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.xnlogic.grates.datatypes.Grate;
 import com.xnlogic.grates.entities.GraphDate;
-import com.xnlogic.grates.entities.GraphYear;
 
 public class DateCreationTests 
 {
@@ -44,6 +44,7 @@ public class DateCreationTests
         assertNotNull(g);
         
         g.init();
+        
         g = null;
         
         assertEquals(1, GraphHelperFunctions.getCalendarCount(calendarName, this.graph));
@@ -69,7 +70,11 @@ public class DateCreationTests
         
         GraphDate gd = g.findOrCreateDate(yearValue, monthValue, dayValue);
         
-        this.verifyDateExistsInGraphForCalendar(yearValue, monthValue, dayValue, calendarName);       
+        this.verifyDateExistsInGraphForCalendar(yearValue, monthValue, dayValue, calendarName);
+        
+        Vertex v = gd.getVertex();
+        
+        assertNotNull(v);
     }
     
     @Test
@@ -83,8 +88,8 @@ public class DateCreationTests
         
         g.init();
         
-        GraphDate gd = g.findOrCreateDate(yearValue, monthValue, dayValue);
-        gd = g.findOrCreateDate(yearValue, monthValue, dayValue);
+        g.findOrCreateDate(yearValue, monthValue, dayValue);
+        g.findOrCreateDate(yearValue, monthValue, dayValue);
         
         this.verifyDateExistsInGraphForCalendarExactlyOnce(yearValue, monthValue, dayValue, calendarName);               
     }
@@ -102,15 +107,13 @@ public class DateCreationTests
     }
     
     @Test
-    public void testCreateEntireYear()
+    public void createEntireYearTest()
     {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
 
-        // create the year (assume not a leap year!)
         this.createYear(calendarName, YEAR);
 
-        // validate the months
         this.validateMonth(calendarName, YEAR, 1, 31);
         this.validateMonth(calendarName, YEAR, 2, 28);
         this.validateMonth(calendarName, YEAR, 3, 31);
@@ -124,6 +127,40 @@ public class DateCreationTests
         this.validateMonth(calendarName, YEAR, 11, 30);
         this.validateMonth(calendarName, YEAR, 12, 31);           
     } 
+    
+    @Test
+    public void checkUnixTimestampTest() {
+        final String calendarName = "TEST_CALENDAR";
+        final int YEAR = 2014;
+        final int MONTH = 4;
+        final int DAY = 30;
+        
+        Grate g = new Grate(calendarName, this.graph);
+        
+        assertNotNull(g);
+        
+        g.init();
+        
+        GraphDate gd = g.findOrCreateDate(YEAR, MONTH, DAY);
+        
+        assertNotNull(gd);
+        
+        String dateString = String.format("%d-%02d-%02d", YEAR, MONTH, DAY);
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+        
+        long unixDate = 0;
+        
+        try {
+            Date d = sdf.parse(dateString);
+            
+            unixDate = d.getTime() / 1000L;
+        } catch (Exception e) {
+            
+        } // try
+
+        assertEquals(unixDate, gd.getUnixDate());
+    }
     
     //
     // HELPER METHODS
