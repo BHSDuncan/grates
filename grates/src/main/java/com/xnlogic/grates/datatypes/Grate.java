@@ -1,5 +1,9 @@
 package com.xnlogic.grates.datatypes;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
@@ -10,8 +14,9 @@ import com.xnlogic.grates.entities.GraphYear;
 public class Grate {
     private final String calendarName;
     private final KeyIndexableGraph graph;
-        
-    private final String CAL_ROOT_PROP = "grates_calendar_root";
+
+    // TODO: Move this into properties file.  Maybe iterate through all keys for indices via properties file
+    private final String CAL_ROOT_PROP = "grates_calendar_name";
     private final String YEAR_EDGE_LABEL = "YEAR";
     private final String YEAR_EDGE_PROP = "value";
     private final String YEAR_VERT_PROP = "grates_year";
@@ -26,10 +31,10 @@ public class Grate {
     // This should always be called after instantiating and before making any calls to a Grate.
     // This method allows Grates to see if the specified calendar currently exists and, if not, creates and initializes it
     public void init() {
-        // try and find the specified calendar root
+        this.checkOrCreateIndices();
+        
         Iterable<Vertex> calendarRoots = this.graph.getVertices(this.CAL_ROOT_PROP, this.calendarName);
         
-        // if we can find the root vertex, let's remember it
         if (calendarRoots != null && calendarRoots.iterator().hasNext())
         {
             for (Vertex calendarRoot : calendarRoots)
@@ -43,7 +48,6 @@ public class Grate {
         }
         else
         {
-            // if we can't find the root, create it            
             Vertex newCalendarRoot = this.graph.addVertex(null);
             newCalendarRoot.setProperty(this.CAL_ROOT_PROP, this.calendarName);
             
@@ -72,14 +76,10 @@ public class Grate {
         
         GraphYear toReturn = null;
         
-        // go through edges to avoid having to load all vertices
         Iterable<Edge> edges = this.backingVertex.getEdges(Direction.OUT, this.YEAR_EDGE_LABEL);
         
-        for (Edge e : edges)
-        {
-            // only return the vertex that matches the edge
-            if ((Integer)e.getProperty(this.YEAR_EDGE_PROP) == yearValue)
-            {
+        for (Edge e : edges) {
+            if ((Integer)e.getProperty(this.YEAR_EDGE_PROP) == yearValue) {
                 toReturn = new GraphYear(e.getVertex(Direction.IN));
                 break;
             } // if
@@ -91,26 +91,34 @@ public class Grate {
     private GraphYear findOrCreateYear(int yearValue) {
         GraphYear graphYear = this.findYear(yearValue);
 
-        // if we've found the year in question, return it!
-        if (graphYear != null)
-        {
+        if (graphYear != null) {
             return graphYear;
         } // if
         
-        // can't find the year in the graph; create it!
         Vertex year = this.graph.addVertex(null);
         
-        // set the appropriate properties
         year.setProperty(this.YEAR_VERT_PROP, yearValue);
         
-        // create the relationship (allows for both "all years" and "get specific year" without needing to load vertex
         Edge e = this.backingVertex.addEdge(this.YEAR_EDGE_LABEL, year);
         e.setProperty(this.YEAR_EDGE_PROP, yearValue);
         
-        // create the in-memory month
         graphYear = new GraphYear(year);
         
         return graphYear;
     } // findOrCreateYear
 
+    private void checkOrCreateIndices() {
+        Set<String> keyNames = new HashSet<String>();
+        keyNames.add(this.CAL_ROOT_PROP);
+
+        Set<String> keys = this.graph.getIndexedKeys(Vertex.class);
+
+        Iterator<String> itKeys = keyNames.iterator();
+
+        for (String key : keyNames) {
+            if (!keys.contains(key)) {
+                this.graph.createKeyIndex(key, Vertex.class);
+            } // if
+        } // while
+    } // checkOrCreateIndices
 } // Grate

@@ -22,12 +22,10 @@ public class GraphMonth extends AbstractGraphDate {
     	
     	GraphDate toReturn = null;
     	
-    	// go through edges to avoid having to load all vertices
         Iterable<Edge> edges = this.backingVertex.getEdges(Direction.OUT, this.DAY_EDGE_LABEL);
         
         for (Edge e : edges)
         {
-        	// only return the vertex that matches the edge
             if ((Integer)e.getProperty(this.DAY_EDGE_PROP) == dayValue)
             {
                 toReturn = new GraphDate(e.getVertex(Direction.IN));
@@ -41,19 +39,18 @@ public class GraphMonth extends AbstractGraphDate {
     public GraphDate findOrCreateDay(int dayValue, KeyIndexableGraph graph) {
         GraphDate graphDate = this.findDay(dayValue);
         
-        // if we've found the day in question, return it!
     	if (graphDate != null)
     	{
     	    return graphDate;
     	} // if
     	
-        // can't find the day in the graph; create it!
         Vertex day = graph.addVertex(null);
         
-        // set the appropriate properties
         day.setProperty(this.DAY_VERT_PROP, dayValue);
-        
-        // create the in-memory month
+
+        Edge e = this.backingVertex.addEdge(this.DAY_EDGE_LABEL, day);
+        e.setProperty(this.DAY_EDGE_PROP, dayValue);
+
         graphDate = new GraphDate(day);
         
         return graphDate;
