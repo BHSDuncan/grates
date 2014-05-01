@@ -11,4 +11,4 @@ public class GraphDateUtil {
         
         return cal.getTimeInMillis() / 1000L;
     } // getUnixTime
-}
+} // GraphDateUtil

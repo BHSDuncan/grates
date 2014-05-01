@@ -6,21 +6,25 @@ import java.util.Set;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.xnlogic.grates.entities.AbstractGraphDate;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.entities.GraphYear;
 import com.xnlogic.grates.util.GraphDateUtil;
+import com.xnlogic.grates.util.GraphUtil;
 
-public class Grate extends AbstractGraphDate{
+public class Grate {
     private final String calendarName;
     private final KeyIndexableGraph graph;
 
     // TODO: Move this into properties file.  Maybe iterate through all keys for indices via properties file
     private final String CAL_ROOT_PROP = "grates_calendar_name";
 
+    private final String DATE_EDGE_PROP = "grates_edge_value";
+
     private final String YEAR_EDGE_LABEL = "YEAR";
     private final String YEAR_VERT_PROP = "grates_year";
     private final String VERT_UNIX_DATE_PROP = "grates_unix_date";
+    
+    private Vertex backingVertex = null;
     
     public Grate(String calendarName, KeyIndexableGraph graph) {
         this.calendarName = calendarName;
@@ -34,13 +38,13 @@ public class Grate extends AbstractGraphDate{
         
         Iterable<Vertex> calendarRoots = this.graph.getVertices(this.CAL_ROOT_PROP, this.calendarName);
 
-        super.backingVertex = this.findVertexFromVertices(this.CAL_ROOT_PROP, this.calendarName, calendarRoots);
+        this.backingVertex = GraphUtil.findVertexFromVertices(this.CAL_ROOT_PROP, this.calendarName, calendarRoots);
         
-        if (super.backingVertex == null) {
+        if (this.backingVertex == null) {
             Vertex newCalendarRoot = this.graph.addVertex(null);
             newCalendarRoot.setProperty(this.CAL_ROOT_PROP, this.calendarName);
             
-            super.backingVertex = newCalendarRoot;
+            this.backingVertex = newCalendarRoot;
         } // if
     } // init
     
@@ -60,11 +64,11 @@ public class Grate extends AbstractGraphDate{
 
     private GraphYear findYear(int yearValue) {
         // TODO: consider throwing exception here
-        if (super.backingVertex == null) {
+        if (this.backingVertex == null) {
             return null;
         } // if
 
-        Vertex yearVertex = this.getDateVertexByOutgoingEdgeValue(yearValue, this.YEAR_EDGE_LABEL);
+        Vertex yearVertex = GraphUtil.getDateVertexByOutgoingEdgeValue(yearValue, this.YEAR_EDGE_LABEL, this.backingVertex);
         
         GraphYear toReturn = (yearVertex == null ? null : new GraphYear(yearVertex));
 

@@ -5,11 +5,13 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.util.GraphDateUtil;
+import com.xnlogic.grates.util.GraphUtil;
 
 public class GraphMonth extends AbstractGraphDate {
     private final String MONTH_VERT_PROP = "grates_month";
     
     private final String DAY_VERT_PROP = "grates_day";
+    private final String DATE_EDGE_PROP = "grates_edge_value";
 
     private final String YEAR_VERT_PROP = "grates_year";
 
@@ -17,16 +19,16 @@ public class GraphMonth extends AbstractGraphDate {
     private final String MONTH_EDGE_LABEL = "MONTH";
     
     public GraphMonth(Vertex v) {
-        super.backingVertex = v;
+        this.backingVertex = v;
     } // constructor
 
     public GraphDate findDay(int dayValue) {
     	// TODO: consider throwing exception here
-    	if (super.backingVertex == null) {
+    	if (this.backingVertex == null) {
     		return null;
     	} // if
     	
-    	Vertex vertDate = this.getDateVertexByOutgoingEdgeValue(dayValue, this.DAY_EDGE_LABEL);
+    	Vertex vertDate = GraphUtil.getDateVertexByOutgoingEdgeValue(dayValue, this.DAY_EDGE_LABEL, this.backingVertex);
     	
         GraphDate toReturn = (vertDate == null ? null : new GraphDate(vertDate));
 

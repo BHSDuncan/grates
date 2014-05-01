@@ -4,25 +4,28 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.util.GraphDateUtil;
+import com.xnlogic.grates.util.GraphUtil;
 
 public class GraphYear extends AbstractGraphDate {
     private final String YEAR_VERT_PROP = "grates_year";
     
-	private final String MONTH_VERT_PROP = "grates_month";
+    private final String MONTH_VERT_PROP = "grates_month";
     
     private final String MONTH_EDGE_LABEL = "MONTH";
-        
-	public GraphYear(Vertex v) {
-        super.backingVertex = v;                        
-	} // constructor
+
+    private final String DATE_EDGE_PROP = "grates_edge_value";
+
+    public GraphYear(Vertex v) {
+        this.backingVertex = v;                        
+    } // constructor
     
     public GraphMonth findMonth(int monthValue) {
     	// TODO: consider throwing exception here
-    	if (super.backingVertex == null) {
+    	if (this.backingVertex == null) {
     		return null;
     	} // if
 
-    	Vertex vertMonth = this.getDateVertexByOutgoingEdgeValue(monthValue, this.MONTH_EDGE_LABEL);
+    	Vertex vertMonth = GraphUtil.getDateVertexByOutgoingEdgeValue(monthValue, this.MONTH_EDGE_LABEL, this.backingVertex);
     	
     	GraphMonth toReturn = (vertMonth == null ? null : new GraphMonth(vertMonth));
         
