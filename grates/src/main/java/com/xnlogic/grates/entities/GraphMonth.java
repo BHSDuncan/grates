@@ -4,6 +4,7 @@ import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
+import com.xnlogic.grates.util.GraphDateUtil;
 
 public class GraphMonth extends AbstractGraphDate {
     private final String MONTH_VERT_PROP = "grates_month";
@@ -11,18 +12,13 @@ public class GraphMonth extends AbstractGraphDate {
     private final String DAY_VERT_PROP = "grates_day";
     private final String DAY_EDGE_PROP = "value";
 
+    private final String YEAR_VERT_PROP = "grates_year";
+
     private final String DAY_EDGE_LABEL = "DAY";
+    private final String MONTH_EDGE_LABEL = "MONTH";
     
-    private int monthValue = 0;
-    private int yearValue = 0;
-    
-    public GraphMonth(Vertex v, int yearValue) {
+    public GraphMonth(Vertex v) {
         this.backingVertex = v;
-        
-        this.monthValue = v.getProperty(this.MONTH_VERT_PROP);
-        this.yearValue = yearValue;
-        
-        this.setUnixDate(yearValue, this.monthValue, 1);        
     } // constructor
 
     public GraphDate findDay(int dayValue) {
@@ -39,7 +35,7 @@ public class GraphMonth extends AbstractGraphDate {
         {
             if ((Integer)e.getProperty(this.DAY_EDGE_PROP) == dayValue)
             {
-                toReturn = new GraphDate(e.getVertex(Direction.IN), this.yearValue, this.monthValue);
+                toReturn = new GraphDate(e.getVertex(Direction.IN));
                 break;
             } // if
         } // for
@@ -56,13 +52,31 @@ public class GraphMonth extends AbstractGraphDate {
     	
         Vertex day = graph.addVertex(null);
         
+        int yearValue = this.getYear();
+        int monthValue = this.backingVertex.getProperty(this.MONTH_VERT_PROP);
+
         day.setProperty(this.DAY_VERT_PROP, dayValue);
+        day.setProperty(this.VERT_UNIX_DATE_PROP, GraphDateUtil.getUnixTime(yearValue, monthValue, dayValue));
 
         Edge e = this.backingVertex.addEdge(this.DAY_EDGE_LABEL, day);
         e.setProperty(this.DAY_EDGE_PROP, dayValue);
 
-        graphDate = new GraphDate(day, this.yearValue, this.monthValue);
+        graphDate = new GraphDate(day);
         
         return graphDate;
     } // findOrCreateDay
+    
+    private int getYear() {
+        int yearValue = 0;
+        
+        Iterable<Vertex> years = this.backingVertex.getVertices(Direction.IN, this.MONTH_EDGE_LABEL);
+        
+        if (years != null && years.iterator().hasNext()) {
+            Vertex year = years.iterator().next();
+            
+            yearValue = year.getProperty(this.YEAR_VERT_PROP);
+        } // if
+        
+        return yearValue;
+    } // getYear
 } // GraphMonth

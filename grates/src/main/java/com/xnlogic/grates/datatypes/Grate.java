@@ -9,6 +9,7 @@ import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.entities.GraphYear;
+import com.xnlogic.grates.util.GraphDateUtil;
 
 public class Grate {
     private final String calendarName;
@@ -16,9 +17,11 @@ public class Grate {
 
     // TODO: Move this into properties file.  Maybe iterate through all keys for indices via properties file
     private final String CAL_ROOT_PROP = "grates_calendar_name";
+
     private final String YEAR_EDGE_LABEL = "YEAR";
     private final String YEAR_EDGE_PROP = "value";
     private final String YEAR_VERT_PROP = "grates_year";
+    private final String VERT_UNIX_DATE_PROP = "grates_unix_date";
     
     private Vertex backingVertex = null;
     
@@ -98,6 +101,7 @@ public class Grate {
         Vertex year = this.graph.addVertex(null);
         
         year.setProperty(this.YEAR_VERT_PROP, yearValue);
+        year.setProperty(this.VERT_UNIX_DATE_PROP, GraphDateUtil.getUnixTime(yearValue, 1, 1));
         
         Edge e = this.backingVertex.addEdge(this.YEAR_EDGE_LABEL, year);
         e.setProperty(this.YEAR_EDGE_PROP, yearValue);

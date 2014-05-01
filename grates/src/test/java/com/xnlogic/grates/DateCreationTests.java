@@ -17,6 +17,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.xnlogic.grates.datatypes.Grate;
 import com.xnlogic.grates.entities.GraphDate;
+import com.xnlogic.grates.util.GraphDateUtil;
 
 public class DateCreationTests 
 {
@@ -145,20 +146,8 @@ public class DateCreationTests
         
         assertNotNull(gd);
         
-        String dateString = String.format("%d-%02d-%02d", YEAR, MONTH, DAY);
+        long unixDate = GraphDateUtil.getUnixTime(YEAR, MONTH, DAY);
         
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-        
-        long unixDate = 0;
-        
-        try {
-            Date d = sdf.parse(dateString);
-            
-            unixDate = d.getTime() / 1000L;
-        } catch (Exception e) {
-            
-        } // try
-
         assertEquals(unixDate, gd.getUnixDate());
     }
     
