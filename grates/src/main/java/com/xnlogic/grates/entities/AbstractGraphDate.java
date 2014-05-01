@@ -1,7 +1,6 @@
 package com.xnlogic.grates.entities;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 
 import com.tinkerpop.blueprints.Vertex;
 
@@ -18,16 +17,10 @@ public abstract class AbstractGraphDate {
     } // getUnixDate
 
     public void setUnixDate(int year, int month, int day) {
-        String dateString = String.format("%d-%02d-%02d", year, month, day);
+        Calendar cal = Calendar.getInstance();
         
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+        cal.set(year, month, day);
         
-        try {
-            Date d = sdf.parse(dateString);
-            
-            this.unixDate = d.getTime() / 1000L;
-        } catch (Exception e) {
-            
-        } // try
+        this.unixDate = cal.getTimeInMillis() / 1000L;
     } // setUnixDate
 } // AbstractGraphDate
