@@ -10,7 +10,6 @@ public class GraphMonth extends AbstractGraphDate {
     private final String MONTH_VERT_PROP = "grates_month";
     
     private final String DAY_VERT_PROP = "grates_day";
-    private final String DAY_EDGE_PROP = "value";
 
     private final String YEAR_VERT_PROP = "grates_year";
 
@@ -18,28 +17,19 @@ public class GraphMonth extends AbstractGraphDate {
     private final String MONTH_EDGE_LABEL = "MONTH";
     
     public GraphMonth(Vertex v) {
-        this.backingVertex = v;
+        super.backingVertex = v;
     } // constructor
 
     public GraphDate findDay(int dayValue) {
     	// TODO: consider throwing exception here
-    	if (this.backingVertex == null) {
+    	if (super.backingVertex == null) {
     		return null;
     	} // if
     	
-    	GraphDate toReturn = null;
+    	Vertex vertDate = this.getDateVertexByOutgoingEdgeValue(dayValue, this.DAY_EDGE_LABEL);
     	
-        Iterable<Edge> edges = this.backingVertex.getEdges(Direction.OUT, this.DAY_EDGE_LABEL);
-        
-        for (Edge e : edges)
-        {
-            if ((Integer)e.getProperty(this.DAY_EDGE_PROP) == dayValue)
-            {
-                toReturn = new GraphDate(e.getVertex(Direction.IN));
-                break;
-            } // if
-        } // for
-        
+        GraphDate toReturn = (vertDate == null ? null : new GraphDate(vertDate));
+
         return toReturn;
     } // findDay
 
@@ -53,13 +43,13 @@ public class GraphMonth extends AbstractGraphDate {
         Vertex day = graph.addVertex(null);
         
         int yearValue = this.getYear();
-        int monthValue = this.backingVertex.getProperty(this.MONTH_VERT_PROP);
+        int monthValue = super.backingVertex.getProperty(this.MONTH_VERT_PROP);
 
         day.setProperty(this.DAY_VERT_PROP, dayValue);
         day.setProperty(this.VERT_UNIX_DATE_PROP, GraphDateUtil.getUnixTime(yearValue, monthValue, dayValue));
 
-        Edge e = this.backingVertex.addEdge(this.DAY_EDGE_LABEL, day);
-        e.setProperty(this.DAY_EDGE_PROP, dayValue);
+        Edge e = super.backingVertex.addEdge(this.DAY_EDGE_LABEL, day);
+        e.setProperty(this.DATE_EDGE_PROP, dayValue);
 
         graphDate = new GraphDate(day);
         
@@ -69,7 +59,7 @@ public class GraphMonth extends AbstractGraphDate {
     private int getYear() {
         int yearValue = 0;
         
-        Iterable<Vertex> years = this.backingVertex.getVertices(Direction.IN, this.MONTH_EDGE_LABEL);
+        Iterable<Vertex> years = super.backingVertex.getVertices(Direction.IN, this.MONTH_EDGE_LABEL);
         
         if (years != null && years.iterator().hasNext()) {
             Vertex year = years.iterator().next();

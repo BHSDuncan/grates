@@ -3,15 +3,15 @@ package com.xnlogic.grates.datatypes;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
+import com.xnlogic.grates.entities.AbstractGraphDate;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.entities.GraphYear;
 import com.xnlogic.grates.util.GraphDateUtil;
 
-public class Grate {
+public class Grate extends AbstractGraphDate{
     private final String calendarName;
     private final KeyIndexableGraph graph;
 
@@ -19,11 +19,8 @@ public class Grate {
     private final String CAL_ROOT_PROP = "grates_calendar_name";
 
     private final String YEAR_EDGE_LABEL = "YEAR";
-    private final String YEAR_EDGE_PROP = "value";
     private final String YEAR_VERT_PROP = "grates_year";
     private final String VERT_UNIX_DATE_PROP = "grates_unix_date";
-    
-    private Vertex backingVertex = null;
     
     public Grate(String calendarName, KeyIndexableGraph graph) {
         this.calendarName = calendarName;
@@ -36,24 +33,14 @@ public class Grate {
         this.checkOrCreateIndices();
         
         Iterable<Vertex> calendarRoots = this.graph.getVertices(this.CAL_ROOT_PROP, this.calendarName);
+
+        super.backingVertex = this.findVertexFromVertices(this.CAL_ROOT_PROP, this.calendarName, calendarRoots);
         
-        if (calendarRoots != null && calendarRoots.iterator().hasNext())
-        {
-            for (Vertex calendarRoot : calendarRoots)
-            {
-                if (calendarRoot.getProperty(this.CAL_ROOT_PROP) == this.calendarName)
-                {
-                    this.backingVertex = calendarRoot;
-                    break;
-                } // if
-            } // for
-        }
-        else
-        {
+        if (super.backingVertex == null) {
             Vertex newCalendarRoot = this.graph.addVertex(null);
             newCalendarRoot.setProperty(this.CAL_ROOT_PROP, this.calendarName);
             
-            this.backingVertex = newCalendarRoot;
+            super.backingVertex = newCalendarRoot;
         } // if
     } // init
     
@@ -73,21 +60,14 @@ public class Grate {
 
     private GraphYear findYear(int yearValue) {
         // TODO: consider throwing exception here
-        if (this.backingVertex == null) {
+        if (super.backingVertex == null) {
             return null;
         } // if
+
+        Vertex yearVertex = this.getDateVertexByOutgoingEdgeValue(yearValue, this.YEAR_EDGE_LABEL);
         
-        GraphYear toReturn = null;
-        
-        Iterable<Edge> edges = this.backingVertex.getEdges(Direction.OUT, this.YEAR_EDGE_LABEL);
-        
-        for (Edge e : edges) {
-            if ((Integer)e.getProperty(this.YEAR_EDGE_PROP) == yearValue) {
-                toReturn = new GraphYear(e.getVertex(Direction.IN));
-                break;
-            } // if
-        } // for
-        
+        GraphYear toReturn = (yearVertex == null ? null : new GraphYear(yearVertex));
+
         return toReturn;    
     } // findYear
     
@@ -104,7 +84,7 @@ public class Grate {
         year.setProperty(this.VERT_UNIX_DATE_PROP, GraphDateUtil.getUnixTime(yearValue, 1, 1));
         
         Edge e = this.backingVertex.addEdge(this.YEAR_EDGE_LABEL, year);
-        e.setProperty(this.YEAR_EDGE_PROP, yearValue);
+        e.setProperty(this.DATE_EDGE_PROP, yearValue);
         
         graphYear = new GraphYear(year);
         
@@ -122,5 +102,5 @@ public class Grate {
                 this.graph.createKeyIndex(key, Vertex.class);
             } // if
         } // while
-    } // checkOrCreateIndices
+    } // checkOrCreateIndices    
 } // Grate
