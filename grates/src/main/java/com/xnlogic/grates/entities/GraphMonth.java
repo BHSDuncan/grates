@@ -2,7 +2,7 @@ package com.xnlogic.grates.entities;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.KeyIndexableGraph;
+import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.util.GraphDateUtil;
 import com.xnlogic.grates.util.GraphUtil;
@@ -35,7 +35,7 @@ public class GraphMonth extends AbstractGraphDate {
         return toReturn;
     } // findDay
 
-    public GraphDate findOrCreateDay(int dayValue, KeyIndexableGraph graph) {
+    public GraphDate findOrCreateDay(int dayValue, Graph graph) {
         GraphDate graphDate = this.findDay(dayValue);
         
     	if (graphDate != null) {

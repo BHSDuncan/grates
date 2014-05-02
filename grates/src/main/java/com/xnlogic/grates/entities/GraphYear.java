@@ -1,7 +1,7 @@
 package com.xnlogic.grates.entities;
 
 import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.KeyIndexableGraph;
+import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.util.GraphDateUtil;
 import com.xnlogic.grates.util.GraphUtil;
@@ -32,7 +32,7 @@ public class GraphYear extends AbstractGraphDate {
         return toReturn;
     } // findMonth
     
-    public GraphMonth findOrCreateMonth(int monthValue, KeyIndexableGraph graph) {
+    public GraphMonth findOrCreateMonth(int monthValue, Graph graph) {
     	GraphMonth graphMonth = this.findMonth(monthValue);
 
     	if (graphMonth != null) {

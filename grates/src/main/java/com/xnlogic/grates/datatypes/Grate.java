@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.tinkerpop.blueprints.Edge;
+import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.entities.GraphDate;
@@ -13,7 +14,7 @@ import com.xnlogic.grates.util.GraphUtil;
 
 public class Grate {
     private final String calendarName;
-    private final KeyIndexableGraph graph;
+    private final Graph graph;
 
     // TODO: Move this into properties file.  Maybe iterate through all keys for indices via properties file
     private final String CAL_ROOT_PROP = "grates_calendar_name";
@@ -26,7 +27,7 @@ public class Grate {
     
     private Vertex backingVertex = null;
     
-    public Grate(String calendarName, KeyIndexableGraph graph) {
+    public Grate(String calendarName, Graph graph) {
         this.calendarName = calendarName;
         this.graph = graph;
     } // constructor
@@ -34,7 +35,9 @@ public class Grate {
     // This should always be called after instantiating and before making any calls to a Grate.
     // This method allows Grates to see if the specified calendar currently exists and, if not, creates and initializes it
     public void init() {
-        this.checkOrCreateIndices();
+        if (this.graph instanceof KeyIndexableGraph) {
+            this.checkOrCreateIndices();
+        } // if
         
         Iterable<Vertex> calendarRoots = this.graph.getVertices(this.CAL_ROOT_PROP, this.calendarName);
 
@@ -95,15 +98,16 @@ public class Grate {
         return graphYear;
     } // findOrCreateYear
 
+    // PRE: this.graph instanceof KeyIndexableGraph == true
     private void checkOrCreateIndices() {
         Set<String> keyNames = new HashSet<String>();
         keyNames.add(this.CAL_ROOT_PROP);
 
-        Set<String> keys = this.graph.getIndexedKeys(Vertex.class);
+        Set<String> keys = ((KeyIndexableGraph)this.graph).getIndexedKeys(Vertex.class);
 
         for (String key : keyNames) {
             if (!keys.contains(key)) {
-                this.graph.createKeyIndex(key, Vertex.class);
+                ((KeyIndexableGraph)this.graph).createKeyIndex(key, Vertex.class);
             } // if
         } // while
     } // checkOrCreateIndices    

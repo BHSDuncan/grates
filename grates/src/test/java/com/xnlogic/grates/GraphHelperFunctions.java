@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
+import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 
@@ -12,7 +13,7 @@ public class GraphHelperFunctions {
     private static final String CAL_ROOT_PROP = "grates_calendar_name";
     private static final String DATE_EDGE_PROP = "grates_edge_value";
       
-    public static Vertex getCalendarRoot(String calendarName, KeyIndexableGraph graph) {
+    public static Vertex getCalendarRoot(String calendarName, Graph graph) {
         Vertex root = null;
         
         Iterable<Vertex> calendarRoots = graph.getVertices(CAL_ROOT_PROP, calendarName);
@@ -157,7 +158,7 @@ public class GraphHelperFunctions {
         return toReturn;            
     }
         
-    public static int getCalendarCount(String calendarName, KeyIndexableGraph graph) {
+    public static int getCalendarCount(String calendarName, Graph graph) {
         int numCalendars = 0;
         
         Iterable<Vertex> calendarRoots = graph.getVertices(CAL_ROOT_PROP, calendarName);
