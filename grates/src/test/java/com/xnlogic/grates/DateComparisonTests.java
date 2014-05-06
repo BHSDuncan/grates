@@ -10,6 +10,7 @@ import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.xnlogic.grates.datatypes.Grate;
 import com.xnlogic.grates.entities.GraphDate;
+import com.xnlogic.grates.exceptions.InvalidDateException;
 
 public class DateComparisonTests {
 
@@ -29,7 +30,7 @@ public class DateComparisonTests {
     }
 
     @Test
-    public void graphDateObjectEqualityTest() {
+    public void graphDateObjectEqualityTest() throws InvalidDateException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
         final int MONTH = 4;
@@ -66,7 +67,7 @@ public class DateComparisonTests {
     }
     
     @Test
-    public void graphDateCreationAndRetrievalTest() {
+    public void graphDateCreationAndRetrievalTest() throws InvalidDateException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
         final int MONTH = 4;
@@ -88,5 +89,4 @@ public class DateComparisonTests {
         
         assertEquals(gd1, gd2);
     }
-    
 }

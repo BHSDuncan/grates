@@ -15,6 +15,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.xnlogic.grates.datatypes.Grate;
 import com.xnlogic.grates.entities.GraphDate;
+import com.xnlogic.grates.exceptions.InvalidDateException;
 import com.xnlogic.grates.util.GraphDateUtil;
 
 public class DateCreationTests 
@@ -32,6 +33,50 @@ public class DateCreationTests
     public void tearDown() throws Exception {
         this.graph.shutdown();
         this.graph = null;
+    }
+
+    @Test(expected=InvalidDateException.class)
+    public void createInvalidDay() throws InvalidDateException {
+        final String calendarName = "TEST_CALENDAR";
+        
+        Grate g = new Grate(calendarName, this.graph);
+        
+        g.init();
+        
+        g.findOrCreateDate(2014, 12, 35);
+    }
+
+    @Test(expected=InvalidDateException.class)
+    public void createInvalidMonth() throws InvalidDateException {
+        final String calendarName = "TEST_CALENDAR";
+        
+        Grate g = new Grate(calendarName, this.graph);
+        
+        g.init();
+        
+        g.findOrCreateDate(2014, 13, 20);
+    }
+
+    @Test(expected=InvalidDateException.class)
+    public void createInvalidLeapYearDate() throws InvalidDateException {
+        final String calendarName = "TEST_CALENDAR";
+        
+        Grate g = new Grate(calendarName, this.graph);
+        
+        g.init();
+        
+        g.findOrCreateDate(2013, 2, 29);
+    }
+
+    @Test
+    public void createValidLeapYearDate() throws InvalidDateException {
+        final String calendarName = "TEST_CALENDAR";
+        
+        Grate g = new Grate(calendarName, this.graph);
+        
+        g.init();
+        
+        g.findOrCreateDate(2012, 2, 29);
     }
 
     @Test
@@ -57,7 +102,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void createValidDateTest() {
+    public void createValidDateTest() throws InvalidDateException {
         final String calendarName = "TEST_CALENDAR";
         final int yearValue = 2014;
         final int monthValue = 4;
@@ -77,7 +122,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void tryToCreateTheSameDateTwiceTest() {
+    public void tryToCreateTheSameDateTwiceTest() throws InvalidDateException {
         final String calendarName = "TEST_CALENDAR";
         final int yearValue = 2014;
         final int monthValue = 4;
@@ -94,7 +139,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void createEntireMonthTest() {
+    public void createEntireMonthTest() throws InvalidDateException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
         final int MONTH = 1;
@@ -106,8 +151,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void createEntireYearTest()
-    {
+    public void createEntireYearTest() throws InvalidDateException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
 
@@ -128,7 +172,7 @@ public class DateCreationTests
     } 
     
     @Test
-    public void checkUnixTimestampTest() {
+    public void checkUnixTimestampTest() throws InvalidDateException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
         final int MONTH = 4;
@@ -235,7 +279,7 @@ public class DateCreationTests
         return size;
     }
     
-    private void createMonth(String calendarName, int year, int month, int numDays) {
+    private void createMonth(String calendarName, int year, int month, int numDays) throws InvalidDateException {
         Grate g = new Grate(calendarName, this.graph);
         
         g.init();
@@ -245,8 +289,7 @@ public class DateCreationTests
         } // for
     } 
     
-    private void createYear(String calendarName, int year)
-    {
+    private void createYear(String calendarName, int year) throws InvalidDateException {
         this.createMonth(calendarName, year, 1, 31);
         this.createMonth(calendarName, year, 2, 28);
         this.createMonth(calendarName, year, 3, 31);
@@ -261,8 +304,7 @@ public class DateCreationTests
         this.createMonth(calendarName, year, 12, 31);
     } // createYear
 
-    private void validateMonth(String calendarName, int yearValue, int monthValue, int totalDays)
-    {
+    private void validateMonth(String calendarName, int yearValue, int monthValue, int totalDays) {
         Vertex calRoot = GraphHelperFunctions.getCalendarRoot(calendarName, this.graph);
         
         Vertex year = GraphHelperFunctions.getYearFromGraph(yearValue, calRoot);

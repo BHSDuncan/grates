@@ -8,6 +8,7 @@ import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.entities.GraphYear;
+import com.xnlogic.grates.exceptions.InvalidDateException;
 import com.xnlogic.grates.util.GraphDateUtil;
 import com.xnlogic.grates.util.GraphUtil;
 
@@ -46,7 +47,9 @@ public class Grate {
         } // if
     } // init
     
-    public GraphDate findDate(int yearValue, int monthValue, int dayValue) {
+    public GraphDate findDate(int yearValue, int monthValue, int dayValue) throws InvalidDateException {
+        GraphDateUtil.valiDate(yearValue, monthValue, dayValue);
+        
         return this.findYear(yearValue)
                    .findMonth(monthValue)
                    .findDay(dayValue);
@@ -54,12 +57,14 @@ public class Grate {
     } // findDate
 
     // PRE: A transaction must already be started.    
-    public GraphDate findOrCreateDate(int yearValue, int monthValue, int dayValue) {
+    public GraphDate findOrCreateDate(int yearValue, int monthValue, int dayValue) throws InvalidDateException {
+        GraphDateUtil.valiDate(yearValue, monthValue, dayValue);
+        
         return this.findOrCreateYear(yearValue)
                    .findOrCreateMonth(monthValue, this.graph)
                    .findOrCreateDay(dayValue, this.graph);
     } // findOrCreateDate
-
+    
     private GraphYear findYear(int yearValue) {
         // TODO: consider throwing exception here
         if (this.backingVertex == null) {
