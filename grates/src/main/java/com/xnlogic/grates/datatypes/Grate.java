@@ -3,7 +3,6 @@ package com.xnlogic.grates.datatypes;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.KeyIndexableGraph;
 import com.tinkerpop.blueprints.Vertex;
@@ -19,11 +18,9 @@ public class Grate {
     // TODO: Move this into properties file.  Maybe iterate through all keys for indices via properties file
     private final String CAL_ROOT_PROP = "grates_calendar_name";
 
-    private final String DATE_EDGE_PROP = "grates_edge_value";
 
     private final String YEAR_EDGE_LABEL = "YEAR";
     private final String YEAR_VERT_PROP = "grates_year";
-    private final String VERT_UNIX_DATE_PROP = "grates_unix_date";
     
     private Vertex backingVertex = null;
     
@@ -83,20 +80,18 @@ public class Grate {
             return graphYear;
         } // if
         
-        Vertex year = this.graph.addVertex(null);
-        
-        year.setProperty(this.YEAR_VERT_PROP, yearValue);
-        year.setProperty(this.VERT_UNIX_DATE_PROP, GraphDateUtil.getUnixTime(yearValue, 1, 1));
-        
-        Edge e = this.backingVertex.addEdge(this.YEAR_EDGE_LABEL, year);
-        e.setProperty(this.DATE_EDGE_PROP, yearValue);
-        
-        graphYear = new GraphYear(year);
+        graphYear = new GraphYear(this.createYearInGraph(yearValue));
         
         return graphYear;
     } // findOrCreateYear
 
-    // PRE: this.graph instanceof KeyIndexableGraph == true
+    private Vertex createYearInGraph(int yearValue) {
+        long unixDate = GraphDateUtil.getUnixTime(yearValue, 1, 1);
+        Vertex year = GraphUtil.createDateSegmentInGraph(yearValue, this.YEAR_VERT_PROP, this.YEAR_EDGE_LABEL, unixDate, this.backingVertex, this.graph);
+        
+        return year;
+    } // createYearInGraph
+    
     private void checkOrCreateIndices() {
         if (this.graph instanceof KeyIndexableGraph) {
             Set<String> keyNames = new HashSet<String>();

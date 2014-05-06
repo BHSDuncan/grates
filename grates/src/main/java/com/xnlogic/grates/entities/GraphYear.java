@@ -1,6 +1,5 @@
 package com.xnlogic.grates.entities;
 
-import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.util.GraphDateUtil;
@@ -12,8 +11,6 @@ public class GraphYear extends AbstractGraphDate {
     private final String MONTH_VERT_PROP = "grates_month";
     
     private final String MONTH_EDGE_LABEL = "MONTH";
-
-    private final String DATE_EDGE_PROP = "grates_edge_value";
 
     public GraphYear(Vertex v) {
         this.backingVertex = v;                        
@@ -39,18 +36,16 @@ public class GraphYear extends AbstractGraphDate {
     	    return graphMonth;
     	} // if
     	
-        Vertex month = graph.addVertex(null);
-
-        int yearValue = super.backingVertex.getProperty(this.YEAR_VERT_PROP);
-
-        month.setProperty(this.MONTH_VERT_PROP, monthValue);
-        month.setProperty(this.VERT_UNIX_DATE_PROP, GraphDateUtil.getUnixTime(yearValue, monthValue, 1));
-        
-        Edge e = super.backingVertex.addEdge(this.MONTH_EDGE_LABEL, month);
-        e.setProperty(this.DATE_EDGE_PROP, monthValue);
-
-        graphMonth = new GraphMonth(month);
+        graphMonth = new GraphMonth(this.createMonthInGraph(monthValue, graph));
         
         return graphMonth;
     } // findOrCreateMonth
+    
+    private Vertex createMonthInGraph(int monthValue, Graph graph) {
+        int yearValue = this.backingVertex.getProperty(this.YEAR_VERT_PROP);
+        long unixDate = GraphDateUtil.getUnixTime(yearValue, monthValue, 1);
+        Vertex month = GraphUtil.createDateSegmentInGraph(monthValue, this.MONTH_VERT_PROP, this.MONTH_EDGE_LABEL, unixDate, this.backingVertex, graph);
+        
+        return month;        
+    } // createMonthInGraph
 } // GraphYear

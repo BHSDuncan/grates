@@ -2,49 +2,30 @@ package com.xnlogic.grates;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.sail.impls.MemoryStoreSailGraph;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.xnlogic.grates.datatypes.Grate;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.util.GraphDateUtil;
 
-@RunWith(Parameterized.class)
 public class DateCreationTests 
 {
     private Graph graph = null;
     
     private final String CAL_ROOT_PROP = "grates_calendar_name";
-    
-    public DateCreationTests(Graph graph) {
-        this.graph = graph;
-    }
-    
-    @Parameterized.Parameters
-    public static Collection graphs() {
-        return Arrays.asList( new Object[]
-            { new TinkerGraph() },
-            new Object[]
-            { new MemoryStoreSailGraph() }
-        );
-    }
-    
+            
     @Before
     public void setUp() throws Exception {
-       // this.graph = new TinkerGraph();
+       this.graph = new TinkerGraph();
     }
 
     @After
