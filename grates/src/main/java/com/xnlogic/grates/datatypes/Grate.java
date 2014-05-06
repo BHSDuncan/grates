@@ -35,9 +35,7 @@ public class Grate {
     // This should always be called after instantiating and before making any calls to a Grate.
     // This method allows Grates to see if the specified calendar currently exists and, if not, creates and initializes it
     public void init() {
-        if (this.graph instanceof KeyIndexableGraph) {
-            this.checkOrCreateIndices();
-        } // if
+        this.checkOrCreateIndices();
         
         Iterable<Vertex> calendarRoots = this.graph.getVertices(this.CAL_ROOT_PROP, this.calendarName);
 
@@ -100,15 +98,17 @@ public class Grate {
 
     // PRE: this.graph instanceof KeyIndexableGraph == true
     private void checkOrCreateIndices() {
-        Set<String> keyNames = new HashSet<String>();
-        keyNames.add(this.CAL_ROOT_PROP);
+        if (this.graph instanceof KeyIndexableGraph) {
+            Set<String> keyNames = new HashSet<String>();
+            keyNames.add(this.CAL_ROOT_PROP);
 
-        Set<String> keys = ((KeyIndexableGraph)this.graph).getIndexedKeys(Vertex.class);
+            Set<String> keys = ((KeyIndexableGraph)this.graph).getIndexedKeys(Vertex.class);
 
-        for (String key : keyNames) {
-            if (!keys.contains(key)) {
-                ((KeyIndexableGraph)this.graph).createKeyIndex(key, Vertex.class);
-            } // if
-        } // while
+            for (String key : keyNames) {
+                if (!keys.contains(key)) {
+                    ((KeyIndexableGraph)this.graph).createKeyIndex(key, Vertex.class);
+                } // if
+            } // while
+        } // if
     } // checkOrCreateIndices    
 } // Grate

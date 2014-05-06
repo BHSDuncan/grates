@@ -45,7 +45,7 @@ public class GraphMonth extends AbstractGraphDate {
         Vertex day = graph.addVertex(null);
         
         int yearValue = this.getYear();
-        int monthValue = super.backingVertex.getProperty(this.MONTH_VERT_PROP);
+        int monthValue = this.backingVertex.getProperty(this.MONTH_VERT_PROP);
 
         day.setProperty(this.DAY_VERT_PROP, dayValue);
         day.setProperty(this.VERT_UNIX_DATE_PROP, GraphDateUtil.getUnixTime(yearValue, monthValue, dayValue));
