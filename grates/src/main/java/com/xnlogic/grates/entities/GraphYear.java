@@ -2,6 +2,7 @@ package com.xnlogic.grates.entities;
 
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
+import com.xnlogic.grates.exceptions.MissingBackingVertexException;
 import com.xnlogic.grates.util.GraphDateUtil;
 import com.xnlogic.grates.util.GraphUtil;
 
@@ -16,10 +17,9 @@ public class GraphYear extends AbstractGraphDate {
         this.backingVertex = v;                        
     } // constructor
     
-    public GraphMonth findMonth(int monthValue) {
-    	// TODO: consider throwing exception here
+    public GraphMonth findMonth(int monthValue) throws MissingBackingVertexException {
     	if (this.backingVertex == null) {
-    		return null;
+    		throw new MissingBackingVertexException("Missing backing vertex for year.");
     	} // if
 
     	Vertex vertMonth = GraphUtil.getDateVertexByOutgoingEdgeValue(monthValue, this.MONTH_EDGE_LABEL, this.backingVertex);
@@ -29,7 +29,7 @@ public class GraphYear extends AbstractGraphDate {
         return toReturn;
     } // findMonth
     
-    public GraphMonth findOrCreateMonth(int monthValue, Graph graph) {
+    public GraphMonth findOrCreateMonth(int monthValue, Graph graph) throws MissingBackingVertexException {
     	GraphMonth graphMonth = this.findMonth(monthValue);
 
     	if (graphMonth != null) {

@@ -9,6 +9,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.entities.GraphYear;
 import com.xnlogic.grates.exceptions.InvalidDateException;
+import com.xnlogic.grates.exceptions.MissingBackingVertexException;
 import com.xnlogic.grates.util.GraphDateUtil;
 import com.xnlogic.grates.util.GraphUtil;
 
@@ -47,7 +48,7 @@ public class Grate {
         } // if
     } // init
     
-    public GraphDate findDate(int yearValue, int monthValue, int dayValue) throws InvalidDateException {
+    public GraphDate findDate(int yearValue, int monthValue, int dayValue) throws InvalidDateException, MissingBackingVertexException {
         GraphDateUtil.valiDate(yearValue, monthValue, dayValue);
         
         return this.findYear(yearValue)
@@ -57,7 +58,7 @@ public class Grate {
     } // findDate
 
     // PRE: A transaction must already be started.    
-    public GraphDate findOrCreateDate(int yearValue, int monthValue, int dayValue) throws InvalidDateException {
+    public GraphDate findOrCreateDate(int yearValue, int monthValue, int dayValue) throws InvalidDateException, MissingBackingVertexException {
         GraphDateUtil.valiDate(yearValue, monthValue, dayValue);
         
         return this.findOrCreateYear(yearValue)
@@ -65,10 +66,9 @@ public class Grate {
                    .findOrCreateDay(dayValue, this.graph);
     } // findOrCreateDate
     
-    private GraphYear findYear(int yearValue) {
-        // TODO: consider throwing exception here
+    private GraphYear findYear(int yearValue) throws MissingBackingVertexException {
         if (this.backingVertex == null) {
-            return null;
+            throw new MissingBackingVertexException("Missing backing vertex for Grate. Did you remember to call init() first?");
         } // if
 
         Vertex yearVertex = GraphUtil.getDateVertexByOutgoingEdgeValue(yearValue, this.YEAR_EDGE_LABEL, this.backingVertex);
@@ -78,7 +78,7 @@ public class Grate {
         return toReturn;    
     } // findYear
     
-    private GraphYear findOrCreateYear(int yearValue) {
+    private GraphYear findOrCreateYear(int yearValue) throws MissingBackingVertexException {
         GraphYear graphYear = this.findYear(yearValue);
 
         if (graphYear != null) {

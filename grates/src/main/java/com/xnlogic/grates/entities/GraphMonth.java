@@ -3,6 +3,7 @@ package com.xnlogic.grates.entities;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
+import com.xnlogic.grates.exceptions.MissingBackingVertexException;
 import com.xnlogic.grates.util.GraphDateUtil;
 import com.xnlogic.grates.util.GraphUtil;
 
@@ -20,10 +21,9 @@ public class GraphMonth extends AbstractGraphDate {
         this.backingVertex = v;
     } // constructor
 
-    public GraphDate findDay(int dayValue) {
-    	// TODO: consider throwing exception here
+    public GraphDate findDay(int dayValue) throws MissingBackingVertexException {
     	if (this.backingVertex == null) {
-    		return null;
+    	    throw new MissingBackingVertexException("Missing backing vertex for month.");
     	} // if
     	
     	Vertex vertDate = GraphUtil.getDateVertexByOutgoingEdgeValue(dayValue, this.DAY_EDGE_LABEL, this.backingVertex);
@@ -33,7 +33,7 @@ public class GraphMonth extends AbstractGraphDate {
         return toReturn;
     } // findDay
 
-    public GraphDate findOrCreateDay(int dayValue, Graph graph) {
+    public GraphDate findOrCreateDay(int dayValue, Graph graph) throws MissingBackingVertexException {
         GraphDate graphDate = this.findDay(dayValue);
         
     	if (graphDate != null) {

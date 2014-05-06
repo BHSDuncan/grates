@@ -11,6 +11,7 @@ import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.xnlogic.grates.datatypes.Grate;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.exceptions.InvalidDateException;
+import com.xnlogic.grates.exceptions.MissingBackingVertexException;
 
 public class DateComparisonTests {
 
@@ -30,7 +31,7 @@ public class DateComparisonTests {
     }
 
     @Test
-    public void graphDateObjectEqualityTest() throws InvalidDateException {
+    public void graphDateObjectEqualityTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
         final int MONTH = 4;
@@ -67,7 +68,7 @@ public class DateComparisonTests {
     }
     
     @Test
-    public void graphDateCreationAndRetrievalTest() throws InvalidDateException {
+    public void graphDateCreationAndRetrievalTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
         final int MONTH = 4;

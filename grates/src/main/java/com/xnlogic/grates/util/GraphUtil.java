@@ -33,10 +33,6 @@ public class GraphUtil {
         return getDateVertexByEdgeValue(value, edgeLabel, Direction.OUT, startingVertex);
     } // getDateVertexByOutgoingEdgeValue
 
-    public static Vertex getDateVertexByIncomingEdgeValue(int value, String edgeLabel, Vertex startingVertex) {
-        return getDateVertexByEdgeValue(value, edgeLabel, Direction.IN, startingVertex);
-    } // getDateVertexByIncomingEdgeValue
-
     public static <T> Vertex findVertexFromVertices(String vertProp, T vertPropValue, Iterable<Vertex> vertices) {
         Vertex toReturn = null;
         

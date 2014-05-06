@@ -15,7 +15,10 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import com.xnlogic.grates.datatypes.Grate;
 import com.xnlogic.grates.entities.GraphDate;
+import com.xnlogic.grates.entities.GraphMonth;
+import com.xnlogic.grates.entities.GraphYear;
 import com.xnlogic.grates.exceptions.InvalidDateException;
+import com.xnlogic.grates.exceptions.MissingBackingVertexException;
 import com.xnlogic.grates.util.GraphDateUtil;
 
 public class DateCreationTests 
@@ -36,7 +39,7 @@ public class DateCreationTests
     }
 
     @Test(expected=InvalidDateException.class)
-    public void createInvalidDay() throws InvalidDateException {
+    public void createInvalidDay() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         
         Grate g = new Grate(calendarName, this.graph);
@@ -47,7 +50,7 @@ public class DateCreationTests
     }
 
     @Test(expected=InvalidDateException.class)
-    public void createInvalidMonth() throws InvalidDateException {
+    public void createInvalidMonth() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         
         Grate g = new Grate(calendarName, this.graph);
@@ -58,7 +61,7 @@ public class DateCreationTests
     }
 
     @Test(expected=InvalidDateException.class)
-    public void createInvalidLeapYearDate() throws InvalidDateException {
+    public void createInvalidLeapYearDate() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         
         Grate g = new Grate(calendarName, this.graph);
@@ -69,7 +72,7 @@ public class DateCreationTests
     }
 
     @Test
-    public void createValidLeapYearDate() throws InvalidDateException {
+    public void createValidLeapYearDate() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         
         Grate g = new Grate(calendarName, this.graph);
@@ -77,6 +80,27 @@ public class DateCreationTests
         g.init();
         
         g.findOrCreateDate(2012, 2, 29);
+    }
+
+    @Test(expected=MissingBackingVertexException.class)
+    public void createGrateWithoutInit() throws InvalidDateException, MissingBackingVertexException {
+        final String calendarName = "TEST_CALENDAR";
+        
+        Grate g = new Grate(calendarName, this.graph);
+               
+        g.findOrCreateDate(2012, 2, 29);
+    }
+
+    @Test(expected=MissingBackingVertexException.class)
+    public void exerciseYearWithoutBackingVertex() throws MissingBackingVertexException {
+        GraphYear gy = new GraphYear(null);
+        gy.findMonth(1);
+    }
+
+    @Test(expected=MissingBackingVertexException.class)
+    public void exerciseMonthWithoutBackingVertex() throws MissingBackingVertexException {        
+        GraphMonth gm = new GraphMonth(null);
+        gm.findDay(1);
     }
 
     @Test
@@ -102,7 +126,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void createValidDateTest() throws InvalidDateException {
+    public void createValidDateTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         final int yearValue = 2014;
         final int monthValue = 4;
@@ -122,7 +146,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void tryToCreateTheSameDateTwiceTest() throws InvalidDateException {
+    public void tryToCreateTheSameDateTwiceTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         final int yearValue = 2014;
         final int monthValue = 4;
@@ -139,7 +163,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void createEntireMonthTest() throws InvalidDateException {
+    public void createEntireMonthTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
         final int MONTH = 1;
@@ -151,7 +175,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void createEntireYearTest() throws InvalidDateException {
+    public void createEntireYearTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
 
@@ -172,7 +196,7 @@ public class DateCreationTests
     } 
     
     @Test
-    public void checkUnixTimestampTest() throws InvalidDateException {
+    public void checkUnixTimestampTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         final int YEAR = 2014;
         final int MONTH = 4;
@@ -279,7 +303,7 @@ public class DateCreationTests
         return size;
     }
     
-    private void createMonth(String calendarName, int year, int month, int numDays) throws InvalidDateException {
+    private void createMonth(String calendarName, int year, int month, int numDays) throws InvalidDateException, MissingBackingVertexException {
         Grate g = new Grate(calendarName, this.graph);
         
         g.init();
@@ -289,7 +313,7 @@ public class DateCreationTests
         } // for
     } 
     
-    private void createYear(String calendarName, int year) throws InvalidDateException {
+    private void createYear(String calendarName, int year) throws InvalidDateException, MissingBackingVertexException {
         this.createMonth(calendarName, year, 1, 31);
         this.createMonth(calendarName, year, 2, 28);
         this.createMonth(calendarName, year, 3, 31);
