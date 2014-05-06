@@ -22,9 +22,9 @@ Answer these questions (to start):
 
 3. What \<events\> occur within a given date range?
 
-4. Does \<event A\> occur after <event B>?
+4. Does \<event A\> occur after \<event B\>?
 
-5. Does \<event A\> happen on the same date as <event B>?
+5. Does \<event A\> happen on the same date as \<event B\>?
 
 6. Does \<event A\> happen within a given date range?
 
