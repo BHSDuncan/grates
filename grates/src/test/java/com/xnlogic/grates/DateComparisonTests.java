@@ -12,12 +12,11 @@ import com.xnlogic.grates.datatypes.Grate;
 import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.exceptions.InvalidDateException;
 import com.xnlogic.grates.exceptions.MissingBackingVertexException;
+import com.xnlogic.grates.util.GraphUtil;
 
 public class DateComparisonTests {
 
     private KeyIndexableGraph graph = null;
-    
-    private final String CAL_ROOT_PROP = "grates_calendar_name";
     
     @Before
     public void setUp() throws Exception {
@@ -30,6 +29,11 @@ public class DateComparisonTests {
         this.graph = null;
     }
 
+    @Test
+    public void tryToGetUnixDateFromNullVertex() {
+        assertEquals(0, GraphUtil.getUnixTimeFromVertex(null));
+    }
+    
     @Test
     public void graphDateObjectEqualityTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
@@ -102,6 +106,10 @@ public class DateComparisonTests {
         final int MONTH_2 = 4;
         final int DAY_2 = 30;
 
+        final int YEAR_3 = 2012;
+        final int MONTH_3 = 4;
+        final int DAY_3 = 30;
+
         Grate g = new Grate(calendarName, this.graph);
         
         g.init();
@@ -112,16 +120,29 @@ public class DateComparisonTests {
         
         GraphDate gd3 = g.findOrCreateDate(YEAR_1, MONTH_1, DAY_1);
         
+        GraphDate gd4 = g.findOrCreateDate(YEAR_3, MONTH_3, DAY_3);
+        
         assertTrue(gd1.isGreaterThan(gd2));
         assertTrue(gd1.isGreaterThanOrEqualTo(gd2));
+        assertEquals(0, gd1.compareTo(gd3));
+        assertEquals(0, gd3.compareTo(gd1));
 
         assertTrue(gd2.isLessThan(gd1));
         assertTrue(gd2.isLessThanOrEqualTo(gd1));
+        assertEquals(1, gd1.compareTo(gd2));
+        assertEquals(-1, gd2.compareTo(gd1));
         
         assertTrue(gd1.isGreaterThanOrEqualTo(gd3));
         assertTrue(gd1.isLessThanOrEqualTo(gd3));
 
         assertTrue(gd3.isGreaterThanOrEqualTo(gd1));
         assertTrue(gd3.isLessThanOrEqualTo(gd1));
+        
+        assertTrue(gd4.isLessThan(gd3));
+        assertTrue(gd4.isLessThan(gd2));
+
+        assertTrue(gd3.isGreaterThan(gd4));
+        assertTrue(gd2.isGreaterThan(gd4));
+
     }
 }
