@@ -10,19 +10,13 @@ import com.xnlogic.grates.entities.GraphDate;
 import com.xnlogic.grates.entities.GraphYear;
 import com.xnlogic.grates.exceptions.InvalidDateException;
 import com.xnlogic.grates.exceptions.MissingBackingVertexException;
+import com.xnlogic.grates.util.GlobalStrings;
 import com.xnlogic.grates.util.GraphDateUtil;
 import com.xnlogic.grates.util.GraphUtil;
 
 public class Grate {
     private final String calendarName;
     private final Graph graph;
-
-    // TODO: Move this into properties file.  Maybe iterate through all keys for indices via properties file
-    private final String CAL_ROOT_PROP = "grates_calendar_name";
-
-
-    private final String YEAR_EDGE_LABEL = "YEAR";
-    private final String YEAR_VERT_PROP = "grates_year";
     
     private Vertex backingVertex = null;
     
@@ -36,13 +30,13 @@ public class Grate {
     public void init() {
         this.checkOrCreateIndices();
         
-        Iterable<Vertex> calendarRoots = this.graph.getVertices(this.CAL_ROOT_PROP, this.calendarName);
+        Iterable<Vertex> calendarRoots = this.graph.getVertices(GlobalStrings.getString("calendar_name_property"), this.calendarName);
 
-        this.backingVertex = GraphUtil.findVertexFromVertices(this.CAL_ROOT_PROP, this.calendarName, calendarRoots);
+        this.backingVertex = GraphUtil.findVertexFromVertices(GlobalStrings.getString("calendar_name_property"), this.calendarName, calendarRoots);
         
         if (this.backingVertex == null) {
             Vertex newCalendarRoot = this.graph.addVertex(null);
-            newCalendarRoot.setProperty(this.CAL_ROOT_PROP, this.calendarName);
+            newCalendarRoot.setProperty(GlobalStrings.getString("calendar_name_property"), this.calendarName);
             
             this.backingVertex = newCalendarRoot;
         } // if
@@ -71,7 +65,7 @@ public class Grate {
             throw new MissingBackingVertexException("Missing backing vertex for Grate. Did you remember to call init() first?");
         } // if
 
-        Vertex yearVertex = GraphUtil.getDateVertexByOutgoingEdgeValue(yearValue, this.YEAR_EDGE_LABEL, this.backingVertex);
+        Vertex yearVertex = GraphUtil.getDateVertexByOutgoingEdgeValue(yearValue, GlobalStrings.getString("year.edge_label"), this.backingVertex);
         
         GraphYear toReturn = (yearVertex == null ? null : new GraphYear(yearVertex));
 
@@ -92,7 +86,7 @@ public class Grate {
 
     private Vertex createYearInGraph(int yearValue) {
         long unixDate = GraphDateUtil.getUnixTime(yearValue, 1, 1);
-        Vertex year = GraphUtil.createDateSegmentInGraph(yearValue, this.YEAR_VERT_PROP, this.YEAR_EDGE_LABEL, unixDate, this.backingVertex, this.graph);
+        Vertex year = GraphUtil.createDateSegmentInGraph(yearValue, GlobalStrings.getString("year.vertex_name_property"), GlobalStrings.getString("year.edge_label"), unixDate, this.backingVertex, this.graph);
         
         return year;
     } // createYearInGraph
@@ -100,7 +94,7 @@ public class Grate {
     private void checkOrCreateIndices() {
         if (this.graph instanceof KeyIndexableGraph) {
             Set<String> keyNames = new HashSet<String>();
-            keyNames.add(this.CAL_ROOT_PROP);
+            keyNames.add(GlobalStrings.getString("calendar_name_property"));
 
             Set<String> keys = ((KeyIndexableGraph)this.graph).getIndexedKeys(Vertex.class);
 

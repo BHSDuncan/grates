@@ -6,8 +6,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.tinkerpop.blueprints.Vertex;
 
 public class GraphDate extends AbstractGraphDate {
-    private final String DAY_VERT_PROP = "grates_day";
-        
     public GraphDate(Vertex v) {
         this.backingVertex = v;        
     } // GraphDate

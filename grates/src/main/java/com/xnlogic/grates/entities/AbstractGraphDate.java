@@ -1,10 +1,9 @@
 package com.xnlogic.grates.entities;
 
 import com.tinkerpop.blueprints.Vertex;
+import com.xnlogic.grates.util.GlobalStrings;
 
-public abstract class AbstractGraphDate {
-    protected final String VERT_UNIX_DATE_PROP = "grates_unix_date";
-    
+public abstract class AbstractGraphDate {    
     protected Vertex backingVertex;
     
     public final Vertex getVertex() {
@@ -14,7 +13,7 @@ public abstract class AbstractGraphDate {
     public final long getUnixDate() {
         Long unixDate = 0L;
         
-        unixDate = this.backingVertex.getProperty(this.VERT_UNIX_DATE_PROP);
+        unixDate = this.backingVertex.getProperty(GlobalStrings.getString("unix_date_property"));
         
         return unixDate.longValue();
     } // getUnixDate    
