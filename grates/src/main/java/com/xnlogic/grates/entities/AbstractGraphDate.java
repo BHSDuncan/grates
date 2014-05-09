@@ -61,7 +61,7 @@ public abstract class AbstractGraphDate implements Comparable<AbstractGraphDate>
         if (obj == this)
             return true;
 
-        if (!(obj instanceof GraphDate))
+        if (!(obj instanceof AbstractGraphDate))
             return false;
 
         AbstractGraphDate otherDate = (AbstractGraphDate)obj;
