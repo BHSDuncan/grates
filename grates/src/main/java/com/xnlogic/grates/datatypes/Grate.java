@@ -60,6 +60,10 @@ public class Grate {
                    .findOrCreateDay(dayValue, this.graph);
     } // findOrCreateDate
     
+    //
+    // PRIVATE / SUPPORTING METHODS BELOW HERE
+    //
+    
     private GraphYear findYear(int yearValue) throws MissingBackingVertexException {
         if (this.backingVertex == null) {
             throw new MissingBackingVertexException("Missing backing vertex for Grate. Did you remember to call init() first?");

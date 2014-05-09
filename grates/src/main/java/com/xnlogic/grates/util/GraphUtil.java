@@ -52,5 +52,13 @@ public class GraphUtil {
         e.setProperty(GlobalStrings.getString("date_segment_edge_property_name"), value);
         
         return dateSegmentVertex;
-    } // createDateSegmentInGraph    
+    } // createDateSegmentInGraph
+    
+    public static long getUnixTimeFromVertex(Vertex v) {
+        if (v == null) {
+            return 0;
+        } // if
+        
+        return v.getProperty(GlobalStrings.getString("unix_date_property"));
+    } // getUnixTimeFromVertex
 } // GraphUtil

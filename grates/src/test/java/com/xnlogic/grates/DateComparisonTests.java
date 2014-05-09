@@ -90,4 +90,38 @@ public class DateComparisonTests {
         
         assertEquals(gd1, gd2);
     }
+    
+    @Test
+    public void relativeComparisonTest() throws InvalidDateException, MissingBackingVertexException {
+        final String calendarName = "TEST_CALENDAR";
+        final int YEAR_1 = 2014;
+        final int MONTH_1 = 4;
+        final int DAY_1 = 30;
+ 
+        final int YEAR_2 = 2013;
+        final int MONTH_2 = 4;
+        final int DAY_2 = 30;
+
+        Grate g = new Grate(calendarName, this.graph);
+        
+        g.init();
+        
+        GraphDate gd1 = g.findOrCreateDate(YEAR_1, MONTH_1, DAY_1);
+        
+        GraphDate gd2 = g.findOrCreateDate(YEAR_2, MONTH_2, DAY_2);
+        
+        GraphDate gd3 = g.findOrCreateDate(YEAR_1, MONTH_1, DAY_1);
+        
+        assertTrue(gd1.isGreaterThan(gd2));
+        assertTrue(gd1.isGreaterThanOrEqualTo(gd2));
+
+        assertTrue(gd2.isLessThan(gd1));
+        assertTrue(gd2.isLessThanOrEqualTo(gd1));
+        
+        assertTrue(gd1.isGreaterThanOrEqualTo(gd3));
+        assertTrue(gd1.isLessThanOrEqualTo(gd3));
+
+        assertTrue(gd3.isGreaterThanOrEqualTo(gd1));
+        assertTrue(gd3.isLessThanOrEqualTo(gd1));
+    }
 }
