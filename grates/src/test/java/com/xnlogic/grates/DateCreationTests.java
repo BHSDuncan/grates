@@ -146,7 +146,7 @@ public class DateCreationTests
     }
     
     @Test
-    public void tryToCreateTheSameDateTwiceTest() throws InvalidDateException, MissingBackingVertexException {
+    public void tryToCreateTheSameDateTwiceTestInTheSameCalendar() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
         final int yearValue = 2014;
         final int monthValue = 4;
@@ -161,7 +161,33 @@ public class DateCreationTests
         
         this.verifyDateExistsInGraphForCalendarExactlyOnce(yearValue, monthValue, dayValue, calendarName);               
     }
-    
+
+    @Test
+    public void tryToCreateTheSameDateTwiceTestInDifferentCalendars() throws InvalidDateException, MissingBackingVertexException {
+        final String calendarName = "TEST_CALENDAR";
+        final String calendarName2 = "TEST_CALENDAR_2";
+        final int yearValue = 2014;
+        final int monthValue = 4;
+        final int dayValue = 30;
+        
+        Grate g = new Grate(calendarName, this.graph);
+        
+        g.init();
+        
+        g.findOrCreateDate(yearValue, monthValue, dayValue);
+        g.findOrCreateDate(yearValue, monthValue, dayValue);
+
+        Grate g2 = new Grate(calendarName2, this.graph);
+        
+        g2.init();
+        
+        g2.findOrCreateDate(yearValue, monthValue, dayValue);
+        g2.findOrCreateDate(yearValue, monthValue, dayValue);
+
+        this.verifyDateExistsInGraphForCalendarExactlyOnce(yearValue, monthValue, dayValue, calendarName);
+        this.verifyDateExistsInGraphForCalendarExactlyOnce(yearValue, monthValue, dayValue, calendarName2);
+    }
+
     @Test
     public void createEntireMonthTest() throws InvalidDateException, MissingBackingVertexException {
         final String calendarName = "TEST_CALENDAR";
